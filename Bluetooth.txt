@@ -1,0 +1,40 @@
+3. 扫描相关方法
+
+
+(1)开始扫描
+public boolean startDiscovery();
+作用 : 开始查找远程蓝牙设备, 先进行12秒的查询扫描(被动可见), 之后进行页面扫描(主动搜索); 
+搜索程中不能尝试对远程设备的连接, 同时已连接的设备的带宽也会被压缩, 等待时间变长; 使用cancelDiscovery()可以终止搜索;
+
+返回值 : 如果成功则返回true, 失败返回false;
+
+权限 :   BLUETOOTH_ADMIN权限;
+
+
+
+(2)是否在扫描中
+public boolean isDiscovering();
+作用 : 是否正在搜索;
+
+返回值 : 如果设备正在搜索, 返回true; 如果设备没有进行蓝牙搜索, 返回false;
+
+权限 : BLUETOOTH权限;
+
+
+
+(3)取消查找
+public boolean cancelDiscovery();
+作用 : 取消蓝牙搜索; 在进行connect()方法的时候, 必须调用这个方法, 蓝牙搜索是一个服务进行, 在搜索中的时候, 不能进行连接;
+
+返回值 : 如果取消成功, 则返回true; 如果取消失败, 返回false;
+
+ 
+
+
+
+(4)获取扫描模式
+public int getScanMode();
+作用 : 获取当前蓝牙的扫描模式;
+
+返回值 : SCAN_MODE_NONE, SCAN_MODE_CONNECTABLE, SCAN_MODE_DISCOVERABLE;
+

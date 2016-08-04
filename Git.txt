@@ -1,0 +1,32 @@
+git remote -v
+
+
+admin@admin-PC MINGW64 /e
+$ git clone git@192.168.1.113:/home/git/repositories/dd_es_wapp_andr.git
+Cloning into 'dd_es_wapp_andr'...
+The authenticity of host '192.168.1.113 (192.168.1.113)' can't be established.
+RSA key fingerprint is SHA256:myYhHxo2h13CaVhgTfQV8l07OVbUzbZyjJpA1M7wF7g.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '192.168.1.113' (RSA) to the list of known hosts.
+git@192.168.1.113's password:
+remote: Counting objects: 3305, done.
+remote: Compressing objects: 100% (2233/2233), done.
+remote: Total 3305 (deReceiving objects:  97% (3206/3305), 33.82 MiB | 11.26 MiBlta 1569), reused 1528 (delta 539)
+Receiving objects: 100% (3305/3305), 37.67 MiB | 11.26 MiB/s, done.
+Resolving deltas: 100% (1569/1569), done.
+Checking connectivity... done.
+
+admin@admin-PC MINGW64 /e
+$ cd dd_es_wapp_andr/
+
+admin@admin-PC MINGW64 /e/dd_es_wapp_andr (master)
+$ git remote -v
+origin  git@192.168.1.113:/home/git/repositories/dd_es_wapp_andr.git (fetch)
+origin  git@192.168.1.113:/home/git/repositories/dd_es_wapp_andr.git (push)
+
+admin@admin-PC MINGW64 /e/dd_es_wapp_andr (master)
+$ ls
+DDBluetooth/  DDBluetoothTest/  DDServiceApp/  DDServiceSocketTest/  readme.md
+
+admin@admin-PC MINGW64 /e/dd_es_wapp_andr (master)
+$
