@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context=".activity.PayOrderActivity">
+
+  <com.teemo.ww.ddpay.view.TitleBar
+      android:id="@+id/titlebar"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:title="支付订单"/>
+
+  <RelativeLayout
+      android:id="@+id/rl_goods"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/height_fifty_six"
+      android:layout_below="@id/titlebar"
+      android:padding="16dp"
+      android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/tv_goods_name"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:text="焦糖玛奇朵"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true">
+
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="¥"/>
+      <TextView
+          android:id="@+id/tv_amount"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:text="32.00"
+          />
+
+    </LinearLayout>
+
+
+  </RelativeLayout>
+
+  <View
+      android:id="@+id/view_line"
+      android:layout_width="match_parent"
+      android:layout_height="5dp"
+      android:layout_below="@id/rl_goods"
+      android:background="@color/bg_grey"/>
+
+  <TextView
+      android:id="@+id/tv_title"
+      android:layout_below="@id/view_line"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="@dimen/margin_sixteen"
+      android:text="选择支付方式"
+      android:textSize="13dp"
+      android:textColor="@color/medium_gray"
+      android:layout_marginTop="@dimen/margin_sixteen"
+      />
+
+  <LinearLayout
+      android:id="@+id/rGroup_list_select"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@id/tv_title"
+      android:orientation="vertical"
+      android:layout_marginTop="6dp">
+
+    <include layout="@layout/line_item"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+
+
+    <RelativeLayout
+        android:id="@+id/rl_swip"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_height"
+        android:paddingLeft="@dimen/margin_sixteen"
+        android:paddingRight="@dimen/margin_sixteen"
+        android:clickable="true"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
+
+      <ImageView
+          android:id="@+id/iv_pay_type_swip"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:gravity="center_vertical"
+          android:src="@drawable/pay_card"/>
+
+
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:layout_toRightOf="@id/iv_pay_type_swip"
+          android:gravity="center_vertical"
+          android:text="刷卡支付"
+          android:textSize="15dp"
+          android:textColor="@color/text_dark_common"
+          android:layout_marginLeft="16dp"/>
+
+      <ToggleButton
+          android:id="@+id/rbtn_pay_type_selected_swip"
+          style="@style/toggle_button_style"/>
+    </RelativeLayout>
+
+    <include layout="@layout/line_item"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="56dp"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_wechat_scan"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_height"
+        android:paddingLeft="@dimen/margin_sixteen"
+        android:paddingRight="@dimen/margin_sixteen"
+        android:clickable="true"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
+
+      <ImageView
+          android:id="@+id/iv_pay_type_wachat_scan"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:gravity="center_vertical"
+          android:src="@drawable/pay_wechat_card"/>
+
+
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:layout_toRightOf="@id/iv_pay_type_wachat_scan"
+          android:gravity="center_vertical"
+          android:text="微信扫一扫"
+          android:textSize="15dp"
+          android:textColor="@color/text_dark_common"
+          android:layout_marginLeft="16dp"/>
+
+      <ToggleButton
+          android:id="@+id/rbtn_pay_type_selected_wechat_scan"
+          style="@style/toggle_button_style"/>
+    </RelativeLayout>
+
+    <include layout="@layout/line_item"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="56dp"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_wechat_code"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_height"
+        android:paddingLeft="@dimen/margin_sixteen"
+        android:paddingRight="@dimen/margin_sixteen"
+        android:clickable="true"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
+
+      <ImageView
+          android:id="@+id/iv_pay_type_wachat_code"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:gravity="center_vertical"
+          android:src="@drawable/pay_wechat"/>
+
+
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:layout_toRightOf="@id/iv_pay_type_wachat_code"
+          android:gravity="center_vertical"
+          android:text="微信二维码"
+          android:textSize="15dp"
+          android:textColor="@color/text_dark_common"
+          android:layout_marginLeft="16dp"/>
+
+      <ToggleButton
+          android:id="@+id/rbtn_pay_type_selected_wechat_code"
+          style="@style/toggle_button_style"
+          android:layout_alignParentRight="true"/>
+    </RelativeLayout>
+
+    <include layout="@layout/line_item"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="56dp"/>
+
+    <RelativeLayout
+        android:id="@+id/rl_zhifubao_code"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_height"
+        android:paddingLeft="@dimen/margin_sixteen"
+        android:paddingRight="@dimen/margin_sixteen"
+        android:clickable="true"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
+
+      <ImageView
+          android:id="@+id/iv_pay_type_zhifubao"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:gravity="center_vertical"
+          android:src="@drawable/pay_zhifubao"/>
+
+
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:layout_toRightOf="@id/iv_pay_type_zhifubao"
+          android:gravity="center_vertical"
+          android:text="支付宝二维码"
+          android:textSize="15dp"
+          android:textColor="@color/text_dark_common"
+          android:layout_marginLeft="16dp"/>
+
+      <ToggleButton
+          android:id="@+id/rbtn_pay_type_selected_zhifubao_code"
+          style="@style/toggle_button_style"/>
+    </RelativeLayout>
+
+    <include layout="@layout/line_item"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+
+  </LinearLayout>
+
+  <Button
+      android:id="@+id/btn_pay"
+      style="@style/common_btn_style"
+      android:layout_margin="14dp"
+      android:layout_alignParentBottom="true"
+      android:background="@drawable/btn_bg_orange_selector"
+      android:text="确认支付"
+      />
+
+</RelativeLayout>

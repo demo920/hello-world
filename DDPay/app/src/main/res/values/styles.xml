@@ -1,11 +1,74 @@
+<!--
+  ~ Copyright (c) 2011-2015. ShenZhen iBOXPAY Information Technology Co.,Ltd.
+  ~
+  ~ All right reserved.
+  ~
+  ~ This software is the confidential and proprietary
+  ~ information of iBoxPay Company of China.
+  ~ ("Confidential Information"). You shall not disclose
+  ~ such Confidential Information and shall use it only
+  ~ in accordance with the terms of the contract agreement
+  ~ you entered into with iBoxpay inc.
+  ~ styles.xml ,Created by: wangxiunian ,2015-06-24 16:42:59 ,lastModified:2015-06-24 16:42:57
+  -->
+
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="android:Theme.Light.NoTitleBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!--**盒子支付**-->
+    <style name="common_btn_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/height_sixty</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/text_size_fifteen</item>
+    </style>
+
+    <style name="toggle_button_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center_vertical|right</item>
+        <item name="android:button">@drawable/togglebutton_selector</item>
+        <item name="android:background">@null</item>
+        <item name="android:textOff"></item>
+        <item name="android:textOn"></item>
+        <item name="android:focusable">false</item>
+        <item name="android:clickable">false</item>
+        <item name="android:layout_alignParentRight">true</item>
+    </style>
+
+    <style name="pay_type_item_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:drawableRight">@drawable/togglebutton_selector</item>
+        <item name="android:drawablePadding">16dp</item>
+        <item name="android:textSize">15dp</item>
+        <item name="android:textColor">@color/text_dark_common</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:checkable">true</item>
+    </style>
+
+
+    <!--订单信息-->
+    <style name="order_info_left_textview_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">15dp</item>
+        <item name="android:textColor">@color/text_dark_common</item>
+    </style>
+
+    <style name="order_info_right_textview_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">15dp</item>
+        <item name="android:textColor">@color/medium_gray</item>
+    </style>
+    <!--**盒子支付**-->
 </resources>

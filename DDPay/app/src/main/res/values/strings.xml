@@ -1,3 +1,69 @@
+<!--
+  ~ Copyright (c) 2011-2015. ShenZhen iBOXPAY Information Technology Co.,Ltd.
+  ~
+  ~ All right reserved.
+  ~
+  ~ This software is the confidential and proprietary
+  ~ information of iBoxPay Company of China.
+  ~ ("Confidential Information"). You shall not disclose
+  ~ such Confidential Information and shall use it only
+  ~ in accordance with the terms of the contract agreement
+  ~ you entered into with iBoxpay inc.
+  ~ strings.xml ,Created by: wangxiunian ,2015-06-24 16:42:59 ,lastModified:2015-06-24 16:42:58
+  -->
+
 <resources>
-    <string name="app_name">DDPay</string>
+  <string name="app_name">盒子支付</string>
+  <string name="hello_world">Hello world!</string>
+  <string name="action_settings">Settings</string>
+
+  <!-- 盒子支付相关 -->
+  <string name="pay">支付</string>
+  <string name="repeal">撤销</string>
+  <string name="login">登录</string>
+  <string name="auth">授权下单</string>
+  <string name="meiwei_auth">美味刷卡支付</string>
+  <string name="print">打印</string>
+  <string name="please_input_merchant_no">请输入商户号</string>
+  <string name="please_input_app_code">请输入APP Code</string>
+  <string name="please_input_amount">请输入金额(单位:分)</string>
+  <string name="scan_code_pay">扫码支付</string>
+  <string name="cardholder_copy">商户存根</string>
+  <string name="cardholder_copy_en">MERCHANT COPY</string>
+  <string name="recipt_merchant_name">MERCHANT NAME \n商户名称</string>
+  <string name="acqurer_text">ACQ\n收单行</string>
+  <string name="sing_receipt_card_no">CARD NO.\n卡号</string>
+  <string name="iss_text">ISS\n发卡行</string>
+  <string name="receipt_merchant_id">MERCHANT NO.\n商户编号</string>
+  <string name="receipt_merchant_terminal_id">TERMINAL ID\n终端编号</string>
+  <string name="receipt_operator_no">OPERATOR NO.\n操作员号</string>
+  <string name="receipt_card_no_text">CARD NO.\n卡号</string>
+  <string name="trans_type_text">TRANS TYPE\n交易类型</string>
+  <string name="trans_batch_no_text">BATCH NO.\n批次号</string>
+  <string name="voucher_no_text">VOUCHER NO.\n凭证号</string>
+  <string name="auth_no_text">AUTH NO.\n授权号</string>
+  <string name="refer_no_text">REFER NO.\n参考号</string>
+  <string name="orderinfo_sendbill">发送签购单</string>
+  <string name="back_trans_btn">撤销交易</string>
+  <string name="receipt_orderno">TRACE NO.\n流水号</string>
+  <string name="receipt_outorderno">TRACE NO.\n第三方流水号</string>
+  <string name="receipt_transaction_time">DATE/TIME\n交易日期/时间</string>
+  <string name="receipt_transaction_amount">AMOUNT\n金额</string>
+  <string name="receipt_cardholder_signature">CARDHOLDER SIGNATURE\n签名</string>
+  <string name="receipt_remark">REFERENCE\n备注</string>
+  <string name="cant_show_map">对不起，无法获取当前位置，地图无法显示。</string>
+  <string name="reparted">已撤销</string>
+  <string name="receipt_title">签购单</string>
+  <string name="param_null">打开失败,请重试</string>
+  <string name="back_to_home">返回主页</string>
+  <string name="device_unbind_tips">设备未绑定!</string>
+  <string name="amount_yuan">%1$s元</string>
+  <string name="sale_text">消费(SALE)</string>
+  <string name="void_text">消费撤销(VOID)</string>
+  <string name="sign_notice">本人确认以上交易,同意将其计入本卡账户</string>
+  <string name="sign_notice_en">I ACKNOWLWDGE SATISFACTORY RECEIPT OF RELATIVE GOODS/SERVICE
+  </string>
+  <string name="goods_money_count">¥%1$s</string>
+  <!-- 盒子支付相关 -->
+
 </resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!--盒子支付标题栏-->
+  <declare-styleable name="TitleBar" format="reference">
+    <attr name="android:title"/>
+    <attr name="leftBtnText" format="string"/>
+    <attr name="showLeftArrow" format="boolean"/>
+    <attr name="rightBtnText" format="string"/>
+    <attr name="rightBtnShape" format="integer">
+      <enum name="square" value="1"/>
+      <enum name="right_arrow" value="0"/>
+    </attr>
+  </declare-styleable>
+</resources>
