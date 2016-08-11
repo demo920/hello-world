@@ -1,8 +1,11 @@
 package com.teemo.ww.ddpay.db;
 
+import com.teemo.ww.ddpay.bean.Order;
 import com.teemo.ww.ddpay.utils.LogUtils;
 
 import org.xutils.DbManager;
+import org.xutils.common.util.KeyValue;
+import org.xutils.db.sqlite.WhereBuilder;
 import org.xutils.ex.DbException;
 
 import java.io.File;
@@ -99,6 +102,32 @@ public class DbHelper<T> {
         } catch (DbException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 更新数据状态
+     * @param db 数据库操作对象
+     * @param t  操作实体
+     * @param where 查找项
+     * @param obj 查找项的值
+     * @param updateRaw 更新项
+     * @param newObj 更新项的新值
+     */
+    public void updataDb(DbManager db, Class t,String where,Object obj,String updateRaw,Object newObj) {
+        try {
+
+            WhereBuilder whereBuilder = WhereBuilder.b(where,"=",obj);
+            KeyValue values = new KeyValue(updateRaw,newObj);
+            int result = db.update((Class<T>) t,whereBuilder,values);
+            LogUtils.d(TAG,"更新项："+result);
+        } catch (DbException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public T readDb(DbManager db, T t,String where,Object obj){
+
+        return t;
     }
 
     /**

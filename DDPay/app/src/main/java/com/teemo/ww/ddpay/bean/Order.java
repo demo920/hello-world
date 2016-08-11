@@ -36,7 +36,7 @@ public class Order implements Serializable {
     @Column(name = "outTradeNo")
     private String mOutTradeNo;
 
-    /**交易流水号*/
+    /**钱盒交易流水号*/
     @Column(name = "cbTradeNo")
     private String mCbTradeNo;
 

@@ -21,9 +21,14 @@ import com.iboxpay.cashbox.minisdk.model.ErrorMsg;
 import com.iboxpay.cashbox.minisdk.model.M1CardPWType;
 import com.iboxpay.cashbox.minisdk.model.PrintPreference;
 import com.teemo.ww.ddpay.R;
+import com.teemo.ww.ddpay.app.PayApplication;
 import com.teemo.ww.ddpay.bean.Order;
 import com.teemo.ww.ddpay.db.DbHelper;
 import com.teemo.ww.ddpay.utils.LogUtils;
+
+import org.xutils.DbManager;
+import org.xutils.common.util.KeyValue;
+import org.xutils.db.sqlite.WhereBuilder;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -167,7 +172,11 @@ public class DemoActivity extends Activity implements View.OnClickListener {
 
             //获取M1卡 卡号
             case R.id.btn_getM1CardNo:
-                fetchM1CardInfo();
+
+                PayApplication app =  (PayApplication) getApplication();
+                DbManager db = app.getDb();
+                DbHelper.getInstance().updataDb(db,Order.class,"amount","552.0","tradeStatus","交易撤销了");
+//                fetchM1CardInfo();
                 break;
         }
     }

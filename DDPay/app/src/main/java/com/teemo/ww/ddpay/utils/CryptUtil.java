@@ -158,6 +158,13 @@ public class CryptUtil {
 
     /**
      * todo 此方法不要放在客户端。。 获取默认的签名 tradeNo 在撤销时传入
+     * @param config
+     * @param amount 交易金额
+     * @param outTradeNo 商户自定义订单号
+     * @param cbTradeNo 盒子支付订单号，没有不用加入验签参数列表（撤销订单时传入）
+     * @param md5key
+     * @param attachMap
+     * @return
      */
     public static String getDefaultSign(Config config, String amount, String outTradeNo,
         String cbTradeNo,String md5key, Map<String, String> attachMap) {

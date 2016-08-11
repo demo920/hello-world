@@ -21,10 +21,14 @@ import com.iboxpay.cashbox.minisdk.model.ParcelableBitmap;
 import com.iboxpay.cashbox.minisdk.model.ParcelableMap;
 import com.iboxpay.cashbox.minisdk.model.TradingNo;
 import com.teemo.ww.ddpay.R;
+import com.teemo.ww.ddpay.app.PayApplication;
+import com.teemo.ww.ddpay.db.DbHelper;
 import com.teemo.ww.ddpay.utils.CryptUtil;
 import com.teemo.ww.ddpay.bean.Order;
 import com.teemo.ww.ddpay.utils.StringUtil;
 import com.teemo.ww.ddpay.view.TitleBar;
+
+import org.xutils.DbManager;
 
 public class OrderDetailActivity extends Activity {
     private static final String TAG = OrderDetailActivity.class.getSimpleName();
@@ -34,10 +38,13 @@ public class OrderDetailActivity extends Activity {
     private Context mContext;
     private Order order;
     private TitleBar titleBar;
+    private DbManager db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PayApplication app =  (PayApplication) getApplication();
+        db = app.getDb();
         setContentView(R.layout.activity_order_detail);
 
         initView();
@@ -75,23 +82,7 @@ public class OrderDetailActivity extends Activity {
         mCheckSaleSlipBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    //查看签购单
-                    String transactionId = System.currentTimeMillis() + "";
-                    ParcelableMap additionalMap = new ParcelableMap();
-                    additionalMap.put(ParcelableMap.TRANSACTION_ID, transactionId);
-
-                    final String sign = CryptUtil.getDefaultSign(Config.config, null, order.getmOutTradeNo(),
-                            order.getmCbTradeNo(), DemoActivity.mMD5Key,
-                            additionalMap.getMap());
-                    CashboxProxy.getInstance(mContext)
-                            .showTradeDetail(transactionId, order.getmOutTradeNo(),
-                                    order.getmCbTradeNo(),
-                                    SignType.TYPE_MD5, sign, additionalMap);
-
-                } catch (ConfigErrorException e) {
-                    e.printStackTrace();
-                }
+                showTradeDetail();
             }
         });
         mPrintSaleSlipBtn = (Button) findViewById(R.id.btn_print_sale_slip);
@@ -123,6 +114,26 @@ public class OrderDetailActivity extends Activity {
                 }
             }
         });
+    }
+
+    private void showTradeDetail() {
+        try {
+            //查看签购单
+            String transactionId = System.currentTimeMillis() + "";
+            ParcelableMap additionalMap = new ParcelableMap();
+            additionalMap.put(ParcelableMap.TRANSACTION_ID, transactionId);
+
+            final String sign = CryptUtil.getDefaultSign(Config.config, null, order.getmOutTradeNo(),
+                    order.getmCbTradeNo(), DemoActivity.mMD5Key,
+                    additionalMap.getMap());
+            CashboxProxy.getInstance(mContext)
+                    .showTradeDetail(transactionId, order.getmOutTradeNo(),
+                            order.getmCbTradeNo(),
+                            SignType.TYPE_MD5, sign, additionalMap);
+
+        } catch (ConfigErrorException e) {
+            e.printStackTrace();
+        }
     }
 
     View.OnClickListener repealOrderListener = new View.OnClickListener() {
@@ -158,12 +169,14 @@ public class OrderDetailActivity extends Activity {
                             for (String key : map.getMap().keySet()) {
                                 Log.d(TAG, key + ":" + map.get(key));
                             }
+                            final String mCbTradeNo = map.get(ParcelableMap.CB_TRADE_NO);
 
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     mTradeStatusTv.setText("已撤销");
                                     titleBar.setRightBtn("", null);
+                                    DbHelper.getInstance().updataDb(db,Order.class,"cbTradeNo",mCbTradeNo,"tradeStatus","已撤销");
                                 }
                             });
                         }

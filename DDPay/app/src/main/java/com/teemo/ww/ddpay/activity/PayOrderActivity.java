@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
 import com.iboxpay.cashbox.minisdk.CashboxProxy;
 import com.iboxpay.cashbox.minisdk.PayType;
 import com.iboxpay.cashbox.minisdk.SignType;
@@ -23,17 +24,15 @@ import com.iboxpay.cashbox.minisdk.model.ParcelableBitmap;
 import com.iboxpay.cashbox.minisdk.model.ParcelableMap;
 import com.teemo.ww.ddpay.R;
 import com.teemo.ww.ddpay.app.PayApplication;
-import com.teemo.ww.ddpay.db.DbHelper;
-import com.teemo.ww.ddpay.utils.CryptUtil;
 import com.teemo.ww.ddpay.bean.Order;
+import com.teemo.ww.ddpay.db.DbHelper;
+import com.teemo.ww.ddpay.manager.IBoxPayManager;
+import com.teemo.ww.ddpay.utils.CryptUtil;
 import com.teemo.ww.ddpay.utils.LogUtils;
 import com.teemo.ww.ddpay.utils.StringUtil;
-import com.teemo.ww.ddpay.utils.ObjToFile;
 
 import org.xutils.DbManager;
-import org.xutils.x;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -46,23 +45,33 @@ public class PayOrderActivity extends Activity implements View.OnClickListener {
     private TextView mPayAmountTv, mGoodsNameTv;
 
     private Context mContext;
-    /**
-     * 您的订单号
-     */
-    private String mTradeNo;
-    /**
-     * 钱盒交易订单号
-     */
-    private String mCbTradeNo;
-    //订单存储
-    private ObjToFile objToFile;
     private Order order;
-
-    private String mOrderTime;
-    private String mCallbackUrl="http://tpf.prepd.iboxpay.com/tpf/order/queryV2.htm/2001740";
-
     private PayApplication app;
     private DbManager db;
+    //订单存储
+//    private ObjToFile objToFile;
+
+    /**
+     * 第三方外部流水号
+     */
+    private String mTradeNo;
+
+    /**
+     * 钱盒交易回执订单号，交易成功生成
+     */
+    private String mCbTradeNo;
+
+    /**
+     * 订单时间
+     */
+    private String mOrderTime;
+
+    /**
+     * 公司后台地址
+     */
+    ////TODO
+    private String mCallbackUrl = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +92,7 @@ public class PayOrderActivity extends Activity implements View.OnClickListener {
         mPayAmountTv.setText(amount);
         mGoodsNameTv.setText(goodsName);
         //存储对象类
-        objToFile = new ObjToFile(mContext);
+//        objToFile = new ObjToFile(mContext);
     }
 
     private void initView() {
@@ -113,7 +122,8 @@ public class PayOrderActivity extends Activity implements View.OnClickListener {
         mPayBtn.setOnClickListener(payOrderClickListener);
     }
 
-    @Override public void onClick(View v) {
+    @Override
+    public void onClick(View v) {
         int resId = v.getId();
         clearCheckStatus();
 
@@ -137,167 +147,284 @@ public class PayOrderActivity extends Activity implements View.OnClickListener {
     }
 
     private View.OnClickListener payOrderClickListener = new View.OnClickListener() {
-        @Override public void onClick(View v) {
+        @Override
+        public void onClick(View v) {
             payOrder();
         }
     };
 
     private void payOrder() {
+
+        //交易金额
+        String amount = getAmount();
+        String mMD5Key = DemoActivity.mMD5Key;
+
         //***********订单存储**************
         order = new Order();
+        order.setmAmount(toYuanAmount(amount));
         //获取当前交易时间
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
         mOrderTime = df.format(new Date());
         order.setmDateTime(df.format(new Date()));
         order.setmGoodsName(mGoodsNameTv.getText().toString());
+        //***********订单存储结束**************
+
+        final IBoxPayManager pm = new IBoxPayManager(mContext);
 
         //刷卡支付
         if (mSwipBtn.isSelected()) {
-            paySwipCard();
+//            paySwipCard(amount, mMD5Key);
+
+            /********使用工具类来发起支付*/
+            //模拟生产一个第三方流水号
+            String outTradeNo = "刷卡_" + System.currentTimeMillis();
+            order.setmPayType(StringUtil.PAY_TYPE_SWIP_CARD);
+            order.setmOutTradeNo(outTradeNo);
+
+            pm.paySwipCard(mMD5Key,amount, outTradeNo, new ITradeCallback() {
+                @Override
+                public void onTradeSuccess(ParcelableMap parcelableMap) {
+                    LogUtils.d(TAG,"工具类，刷卡交易成功");
+                    tradeSuccess(parcelableMap);
+                }
+
+                @Override
+                public void onTradeSuccessWithSign(ParcelableMap parcelableMap, ParcelableBitmap parcelableBitmap) {
+
+                }
+
+                @Override
+                public void onTradeFail(ErrorMsg errorMsg) {
+                    LogUtils.d(TAG,"工具类，刷卡交易失败");
+
+                }
+            });
         }
 
         //微信扫码支付
         if (mWechatScanBtn.isSelected()) {
-            payWechatScan();
+//            payWechatScan(amount, mMD5Key);
+
+            /********使用工具类来发起支付*/
+            //模拟生产一个第三方流水号
+            String outTradeNo = "微信扫码_" + System.currentTimeMillis();
+            order.setmPayType(StringUtil.PAY_TYPE_WECHAT_SCAN);
+            order.setmOutTradeNo(outTradeNo);
+
+            pm.payWechatScan(mMD5Key, amount, outTradeNo, new ITradeCallback() {
+                @Override
+                public void onTradeSuccess(ParcelableMap parcelableMap) {
+                    LogUtils.d(TAG,"工具类，微信扫码支付成功");
+                    tradeSuccess(parcelableMap);
+                }
+
+                @Override
+                public void onTradeSuccessWithSign(ParcelableMap parcelableMap, ParcelableBitmap parcelableBitmap) {
+
+                }
+
+                @Override
+                public void onTradeFail(ErrorMsg errorMsg) {
+                    LogUtils.d(TAG,"工具类，微信扫码支付失败");
+
+                }
+            });
+
         }
 
         //微信二维码支付
         if (mWechatCodeBtn.isSelected()) {
-            payWechatCode();
+//            payWechatCode(amount, mMD5Key);
+
+            /********使用工具类来发起支付*/
+            //模拟生产一个第三方流水号
+            String outTradeNo = "微信二维码_" + System.currentTimeMillis();
+            order.setmPayType(StringUtil.PAY_TYPE_SWIP_CARD);
+            order.setmOutTradeNo(outTradeNo);
+
+            pm.payWechatCode(mMD5Key, amount, outTradeNo, new ITradeCallback() {
+                @Override
+                public void onTradeSuccess(ParcelableMap parcelableMap) {
+                    LogUtils.d(TAG,"工具类，微信二维码支付成功");
+                    tradeSuccess(parcelableMap);
+                }
+
+                @Override
+                public void onTradeSuccessWithSign(ParcelableMap parcelableMap, ParcelableBitmap parcelableBitmap) {
+
+                }
+
+                @Override
+                public void onTradeFail(ErrorMsg errorMsg) {
+                    LogUtils.d(TAG,"工具类，微信二维码支付失败");
+
+                }
+            });
         }
 
         //支付宝二维码支付
         if (mZhifubaoCodeBtn.isSelected()) {
-            payZhiFuBao();
+//            payZhiFuBao(amount, mMD5Key);
+
+            /********使用工具类来发起支付*/
+            //模拟生产一个第三方流水号
+            String outTradeNo = "支付宝_" + System.currentTimeMillis();
+            order.setmPayType(StringUtil.PAY_TYPE_SWIP_CARD);
+            order.setmOutTradeNo(outTradeNo);
+
+            pm.payZhiFuBao(mMD5Key, amount, outTradeNo, new ITradeCallback() {
+                @Override
+                public void onTradeSuccess(ParcelableMap parcelableMap) {
+                    LogUtils.d(TAG,"工具类，支付宝成功");
+                    tradeSuccess(parcelableMap);
+                }
+
+                @Override
+                public void onTradeSuccessWithSign(ParcelableMap parcelableMap, ParcelableBitmap parcelableBitmap) {
+
+                }
+
+                @Override
+                public void onTradeFail(ErrorMsg errorMsg) {
+                    LogUtils.d(TAG,"工具类，支付宝失败");
+
+                }
+            });
         }
     }
 
     /**
      * 刷卡支付响应事件
+     *
+     * @param amount
      */
-    private void paySwipCard() {
+    private void paySwipCard(String amount, String mMD5Key) {
+
         //***********订单存储**************
         order.setmPayType(StringUtil.PAY_TYPE_SWIP_CARD);
-        //*************订单存储结束**********************
+        //***********订单存储结束***********
 
         //模拟生产一个第三方流水号
         mTradeNo = "刷卡_" + System.currentTimeMillis();
-        final String amount = getAmount();
 
-        order.setmPayType(StringUtil.PAY_TYPE_SWIP_CARD);
         try {
+
+            //**********必须加入签名信息的字段***************
             String transactionId = System.currentTimeMillis() + "";
             ParcelableMap additionalMap = new ParcelableMap();
             additionalMap.put(ParcelableMap.TRANSACTION_ID, transactionId);
             additionalMap.put(ParcelableMap.RESV, "wwxxnn");
             additionalMap.put(ParcelableMap.ORDER_TIME, mOrderTime);
             additionalMap.put(ParcelableMap.CALL_BACK_URL, mCallbackUrl);
+            String sign = CryptUtil.getDefaultSign(Config.config, amount, mTradeNo, null, mMD5Key,
+                    additionalMap.getMap());
+            //**********必须加入签名信息的字段***************
 
-            String sign = CryptUtil.getDefaultSign(Config.config, amount, mTradeNo, null,DemoActivity.mMD5Key,
-                additionalMap.getMap());
-            //****设置打印出来的订单号*****
-            additionalMap.put(ParcelableMap.PRINT_ORDER_NO,"自定义第三方流水号");
+            //****设置打印出来的订单号*****（不需要加入签名信息的字段，放在签名完之后的map集合传入）
+            additionalMap.put(ParcelableMap.PRINT_ORDER_NO, "自定义第三方流水号");
 
             //发起交易
             CashboxProxy.getInstance(mContext).startTrading(PayType.TYPE_CARD, amount,
-                mTradeNo, transactionId,
-                SignType.TYPE_MD5, sign, additionalMap, new ITradeCallback() {
-                    @Override
-                    public void onTradeSuccess(ParcelableMap map) {
-                        Log.e("&&&&&", "-----------------onTradeSuccess");
-                        Log.d(TAG, "刷卡的交易成功");
-                        tradeSuccess(map);
-                    }
+                    mTradeNo, transactionId,
+                    SignType.TYPE_MD5, sign, additionalMap, new ITradeCallback() {
+                        @Override
+                        public void onTradeSuccess(ParcelableMap map) {
+                            Log.d(TAG, "刷卡的交易成功");
+                            tradeSuccess(map);
+                        }
 
-                    //设置了不显示盒子签购单时回调此方法。
-                    @Override
-                    public void onTradeSuccessWithSign(ParcelableMap map,
-                        ParcelableBitmap signBitmap) {
-                        Log.e("&&&&&", "onTradeSuccessWithSign");
-                    }
+                        //设置了不显示盒子签购单时回调此方法。多返回一张交易订单图片bitmap
+                        @Override
+                        public void onTradeSuccessWithSign(ParcelableMap map,
+                                                           ParcelableBitmap signBitmap) {
+                            Log.d(TAG, "刷卡的交易成功---onTradeSuccessWithSign");
+                        }
 
-                    @Override
-                    public void onTradeFail(ErrorMsg msg) {
-                        Log.d(TAG, msg.getErrorMsg() + "[" + msg.getErrorCode() + "]");
+                        @Override
+                        public void onTradeFail(ErrorMsg msg) {
+                            Log.d(TAG, msg.getErrorMsg() + "[" + msg.getErrorCode() + "]");
 
-                        //*******写入文件******
-                        tradeFail(msg,amount);
-                        //********写入文件结束************
-                    }
-                });
+                            //*******写入文件******
+                            tradeFail(msg);
+                            //********写入文件结束************
+                        }
+                    });
         } catch (ConfigErrorException e) {
             e.printStackTrace();
         }
     }
 
     //二维码扫描支付
-    private void payWechatScan() {
+    private void payWechatScan(String amount, String mMD5Key) {
         //***********订单存储**************
         order.setmPayType(StringUtil.PAY_TYPE_WECHAT_SCAN);
         //*************订单存储结束**********************
 
         //模拟生产一个外部流水号
         mTradeNo = "out_" + System.currentTimeMillis();
+
         String transactionId = System.currentTimeMillis() + "";
-        final String amount = getAmount();
         ParcelableMap additionalMap = new ParcelableMap();
         additionalMap.put(ParcelableMap.TRANSACTION_ID, transactionId);
         additionalMap.put(ParcelableMap.RESV, "wwxxnn");
         additionalMap.put(ParcelableMap.PARTNER_ID, Config.config.getPartnerId());
-        additionalMap.put(ParcelableMap.PARTNER_USERID,Config.config.getPartnerUserId());
+        additionalMap.put(ParcelableMap.PARTNER_USERID, Config.config.getPartnerUserId());
         additionalMap.put(ParcelableMap.IBOX_MCHTNO, Config.config.getIboxMchtNo());
-        String orderNo = "2015121716503";
+        //TODO 订单
+        SimpleDateFormat df = new SimpleDateFormat ("yyyyMMddHHmmssZ");
+        String orderNo = "WechatScan" + df.format(new Date());
+        LogUtils.i(TAG,"微信二维码扫描"+orderNo);
+//        String orderNo = "2015121716503"+System.currentTimeMillis();
         additionalMap.put(ParcelableMap.ORDER_NO, orderNo);
         additionalMap.put(ParcelableMap.ORDER_TIME, mOrderTime);
-        additionalMap.put(ParcelableMap.CALL_BACK_URL,mCallbackUrl);
+        additionalMap.put(ParcelableMap.CALL_BACK_URL, mCallbackUrl);
         //签名
-        String sign = CryptUtil.getDefaultSign(Config.config, amount, mTradeNo, null,DemoActivity.mMD5Key,
-            additionalMap.getMap());
+        String sign = CryptUtil.getDefaultSign(Config.config, amount, mTradeNo, null, mMD5Key,
+                additionalMap.getMap());
+
         Log.e("WeChatWasScanPay  &&&&", "sign = " + sign);
         additionalMap.put(ParcelableMap.PRINT_ORDER_NO, "微信被扫的商户订单号");
-        additionalMap.put(ParcelableMap.SUBJECT,"二维码扫描支付");
+        additionalMap.put(ParcelableMap.SUBJECT, "二维码扫描支付");
 
         try {
             CashboxProxy.getInstance(mContext).startTrading(PayType.TYPE_WEIPAY_SCAN, amount,
-                mTradeNo,
-                transactionId, SignType.TYPE_MD5, sign, additionalMap, new ITradeCallback() {
-                    @Override
-                    public void onTradeSuccess(ParcelableMap map) {
-                        Log.e("WeChatWasScanPay", "-----------------onTradeSuccess");
-                        Log.d(TAG, "微信被扫的交易成功");
-                        tradeSuccess(map);
-                    }
+                    mTradeNo,
+                    transactionId, SignType.TYPE_MD5, sign, additionalMap, new ITradeCallback() {
+                        @Override
+                        public void onTradeSuccess(ParcelableMap map) {
+                            Log.e("WeChatWasScanPay", "-----------------onTradeSuccess");
+                            Log.d(TAG, "微信被扫的交易成功");
+                            tradeSuccess(map);
+                        }
 
-                    @Override
-                    public void onTradeSuccessWithSign(ParcelableMap map,
-                        ParcelableBitmap signBitmap) {
-                        Log.e("WeChatWasScanPay", "-----------------onTradeSuccessWithSign");
-                    }
+                        @Override
+                        public void onTradeSuccessWithSign(ParcelableMap map,
+                                                           ParcelableBitmap signBitmap) {
+                            Log.e("WeChatWasScanPay", "-----------------onTradeSuccessWithSign");
+                        }
 
-                    @Override
-                    public void onTradeFail(final ErrorMsg msg) {
-                        Toast.makeText(PayOrderActivity.this,
-                            msg.getErrorMsg() + "[" + msg.getErrorCode() + "]", Toast.LENGTH_SHORT)
-                            .show();
+                        @Override
+                        public void onTradeFail(final ErrorMsg msg) {
+                            Toast.makeText(PayOrderActivity.this,
+                                    msg.getErrorMsg() + "[" + msg.getErrorCode() + "]", Toast.LENGTH_SHORT)
+                                    .show();
 
-                        //*******写入文件******
-                        tradeFail(msg, amount);
-                        //*************写入文件结束**********************
-                    }
-                });
+                            //*******写入文件******
+                            tradeFail(msg);
+                            //*************写入文件结束**********************
+                        }
+                    });
         } catch (ConfigErrorException e) {
             e.printStackTrace();
         }
     }
 
-    private void payWechatCode() {
+    private void payWechatCode(String amount, String mMD5Key) {
         //***********订单存储**************
         order.setmPayType(StringUtil.PAY_TYPE_WECHAT_CODE);
 
         //模拟生产一个外部流水号
         final String outTradeNo = "out_" + System.currentTimeMillis();
-        final String amount = getAmount();
-        order.setmPayType(StringUtil.PAY_TYPE_WECHAT_CODE);
 
         String transactionId = System.currentTimeMillis() + "";
         ParcelableMap additionalMap = new ParcelableMap();
@@ -305,113 +432,117 @@ public class PayOrderActivity extends Activity implements View.OnClickListener {
         additionalMap.put(ParcelableMap.RESV, "微信主扫");
         additionalMap.put(ParcelableMap.ORDER_TIME, mOrderTime);
         additionalMap.put(ParcelableMap.CALL_BACK_URL, mCallbackUrl);
-        additionalMap.put(ParcelableMap.ORDER_NO, "20170614213030");
+        //TODO 订单
+        String orderNo = "20170614213030"+System.currentTimeMillis();
+        additionalMap.put(ParcelableMap.ORDER_NO, orderNo);
+//        additionalMap.put(ParcelableMap.ORDER_NO, "20170614213030");
         //签名
-        String sign = CryptUtil.getDefaultSign(Config.config, amount, outTradeNo, null,DemoActivity.mMD5Key,
-            additionalMap.getMap());
+        String sign = CryptUtil.getDefaultSign(Config.config, amount, outTradeNo, null, mMD5Key,
+                additionalMap.getMap());
         additionalMap.put(ParcelableMap.PRINT_ORDER_NO, "微信主扫的商户订单号");
-        additionalMap.put(ParcelableMap.SUBJECT,"二维码主扫支付");
+        additionalMap.put(ParcelableMap.SUBJECT, "二维码主扫支付");
 
         try {
             CashboxProxy.getInstance(mContext).startTrading(PayType.TYPE_WEIPAY_QRCODE, amount,
-                outTradeNo,
-                transactionId, SignType.TYPE_MD5, sign, additionalMap, new ITradeCallback() {
-                    @Override
-                    public void onTradeSuccess(ParcelableMap map) {
-                        Log.e("WeChat", "-----------------onTradeSuccess");
-                        Log.d(TAG, "微信主扫交易成功");
-                        tradeSuccess(map);
-                    }
+                    outTradeNo,
+                    transactionId, SignType.TYPE_MD5, sign, additionalMap, new ITradeCallback() {
+                        @Override
+                        public void onTradeSuccess(ParcelableMap map) {
+                            Log.e("WeChat", "-----------------onTradeSuccess");
+                            Log.d(TAG, "微信主扫交易成功");
+                            tradeSuccess(map);
+                        }
 
-                    @Override
-                    public void onTradeSuccessWithSign(ParcelableMap map,
-                        ParcelableBitmap signBitmap) {
-                        Log.e("WeChat", "-----------------onTradeSuccessWithSign");
-                    }
+                        @Override
+                        public void onTradeSuccessWithSign(ParcelableMap map,
+                                                           ParcelableBitmap signBitmap) {
+                            Log.e("WeChat", "-----------------onTradeSuccessWithSign");
+                        }
 
-                    @Override
-                    public void onTradeFail(ErrorMsg msg) {
-                        Log.e("WeChat", "-----------------onTradeFail--msg=" + msg);
-                        //*******写入文件******
-                        tradeFail(msg, amount);
-                        //*******写入文件结束******
-                    }
-                });
+                        @Override
+                        public void onTradeFail(ErrorMsg msg) {
+                            Log.e("WeChat", "-----------------onTradeFail--msg=" + msg);
+                            //*******写入文件******
+                            tradeFail(msg);
+                            //*******写入文件结束******
+                        }
+                    });
         } catch (ConfigErrorException e) {
             e.printStackTrace();
         }
     }
 
-    private void payZhiFuBao() {
+    private void payZhiFuBao(String amount, String mMD5Key) {
         //***********订单存储**************
         order.setmPayType(StringUtil.PAY_TYPE_ZHIFUBAO_CODE);
         //***********订单存储**************
+
         //模拟生产一个外部流水号
         mTradeNo = "out_" + System.currentTimeMillis();
-        String transactionId = System.currentTimeMillis() + "";
-        final String amount = getAmount();
+        String orderNo = "2015121716500"+System.currentTimeMillis();
 
-        String orderNo = "2015121716500";
+        String transactionId = System.currentTimeMillis() + "";
         ParcelableMap additionalMap = new ParcelableMap();
         additionalMap.put(ParcelableMap.TRANSACTION_ID, transactionId);
         additionalMap.put(ParcelableMap.ORDER_NO, orderNo);
         additionalMap.put(ParcelableMap.ORDER_TIME, mOrderTime);
-        additionalMap.put(ParcelableMap.CALL_BACK_URL,mCallbackUrl);
+        additionalMap.put(ParcelableMap.CALL_BACK_URL, mCallbackUrl);
         //签名
-        String sign = CryptUtil.getDefaultSign(Config.config, amount, mTradeNo, null,DemoActivity.mMD5Key,
-            additionalMap.getMap());
+        String sign = CryptUtil.getDefaultSign(Config.config, amount, mTradeNo, null, mMD5Key,
+                additionalMap.getMap());
+
         additionalMap.put(ParcelableMap.PRINT_ORDER_NO, "myOrderNotest");
-        additionalMap.put(ParcelableMap.SUBJECT,"支付宝主扫支付");
+        additionalMap.put(ParcelableMap.SUBJECT, "支付宝主扫支付");
 
 
         try {
             CashboxProxy.getInstance(mContext).startTrading(PayType.TYPE_ALIPAY, amount,
-                mTradeNo,
-                transactionId, SignType.TYPE_MD5, sign, additionalMap, new ITradeCallback() {
-                    @Override
-                    public void onTradeSuccess(ParcelableMap map) {
-                        Log.e("MiniCashBoxLog", "-----------------onTradeSuccess");
-                        Log.d(TAG, "支付宝主扫交易成功");
-                        tradeSuccess(map);
-                    }
+                    mTradeNo,
+                    transactionId, SignType.TYPE_MD5, sign, additionalMap, new ITradeCallback() {
+                        @Override
+                        public void onTradeSuccess(ParcelableMap map) {
+                            Log.e("MiniCashBoxLog", "-----------------onTradeSuccess");
+                            Log.d(TAG, "支付宝主扫交易成功");
+                            tradeSuccess(map);
+                        }
 
-                    @Override
-                    public void onTradeSuccessWithSign(ParcelableMap map,
-                        ParcelableBitmap signBitmap) {
-                        Log.d("MiniCashBoxLog", "-----------------onTradeSuccessWithSign");
-                    }
+                        @Override
+                        public void onTradeSuccessWithSign(ParcelableMap map,
+                                                           ParcelableBitmap signBitmap) {
+                            Log.d("MiniCashBoxLog", "-----------------onTradeSuccessWithSign");
+                        }
 
-                    @Override
-                    public void onTradeFail(ErrorMsg msg) {
-                        Log.d("MiniCashBoxLog", "-----------------onTradeFail--msg=" + msg);
-                        tradeFail(msg, amount);
+                        @Override
+                        public void onTradeFail(ErrorMsg msg) {
+                            Log.d("MiniCashBoxLog", "-----------------onTradeFail--msg=" + msg);
+                            tradeFail(msg);
 
 
-                    }
-                });
+                        }
+                    });
         } catch (ConfigErrorException e) {
             e.printStackTrace();
         }
     }
 
-    private void tradeFail(ErrorMsg msg, String amount) {
+    private void tradeFail(ErrorMsg msg) {
         //*******写入文件******
         order.setmTradeStatus(msg.getErrorMsg());
-        order.setmAmount(toYuanAmount(amount));
         order.setmTradeStatus(StringUtil.TRADE_STATUS_FAIL);
         order.setmCbTradeNo(mCbTradeNo);
         order.setmOutTradeNo(mTradeNo);
-        objToFile.writeObject(order);
+//        objToFile.writeObject(order);
 
         //写入数据库
-        LogUtils.i("ORDER",order.toString());
-        DbHelper.getInstance().saveDb(db,order);
+        LogUtils.i("ORDER", order.toString());
+        DbHelper.getInstance().saveDb(db, order);
 
         //*******写入文件结束******
     }
 
     /**
      * 所有类型的交易成功后统一操作
+     *
      * @param map 回执信息
      */
     private void tradeSuccess(ParcelableMap map) {
@@ -419,25 +550,26 @@ public class PayOrderActivity extends Activity implements View.OnClickListener {
             Log.d(TAG, key + ":" + map.get(key));
         }
         mCbTradeNo = map.get(ParcelableMap.CB_TRADE_NO);
-        mTradeNo = map.get(ParcelableMap.PARTNER_TRADE_NO);
-        String amount = map.get(ParcelableMap.TRANS_AMOUNT);
+//        mTradeNo = map.get(ParcelableMap.PARTNER_TRADE_NO);
+//        String amount = map.get(ParcelableMap.TRANS_AMOUNT);
+
         //*******写入文件******
         order.setmCbTradeNo(mCbTradeNo);
-        order.setmOutTradeNo(mTradeNo);
-        order.setmAmount(toYuanAmount(amount));
+//        order.setmOutTradeNo(mTradeNo);
+//        order.setmAmount(toYuanAmount(amount));
         order.setmTradeStatus(StringUtil.TRADE_STATUS_SUCCESS);
 //        objToFile.writeObject(order);
 
         //写入数据库
-        LogUtils.i("ORDER",order.toString());
-        DbHelper.getInstance().saveDb(db,order);
+        LogUtils.i("ORDER", order.toString());
+        DbHelper.getInstance().saveDb(db, order);
+        //********写入文件结束************
 
         Intent intent = new Intent(PayOrderActivity.this, DemoActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         setResult(BookOrderActivity.OK);
         finish();
-        //********写入文件结束************
     }
 
     private void clearCheckStatus() {
@@ -447,6 +579,9 @@ public class PayOrderActivity extends Activity implements View.OnClickListener {
         mZhifubaoCodeBtn.setSelected(false);
     }
 
+    /**
+     * 获取交易金额
+     */
     private String getAmount() {
         String amount = mPayAmountTv.getText().toString();
         if (!TextUtils.isEmpty(amount)) {

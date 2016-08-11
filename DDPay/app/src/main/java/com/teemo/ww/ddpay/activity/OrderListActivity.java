@@ -22,6 +22,7 @@ import com.teemo.ww.ddpay.bean.Order;
 import com.teemo.ww.ddpay.db.DbHelper;
 import com.teemo.ww.ddpay.utils.StringUtil;
 import com.teemo.ww.ddpay.utils.ObjToFile;
+import com.teemo.ww.ddpay.utils.ToastUtils;
 
 import org.xutils.DbManager;
 
@@ -38,12 +39,14 @@ public class OrderListActivity extends Activity {
     private List<Order> mDatas;
     private PayApplication app;
     private DbManager db;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         app = (PayApplication) getApplication();
         db = app.getDb();
+        mContext = this;
         setContentView(R.layout.activity_order_list);
 
         initView();
@@ -85,9 +88,12 @@ public class OrderListActivity extends Activity {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Order order = (Order) adapterView.getAdapter().getItem(position);
-                DbHelper.getInstance().deleteObj(db,Order.class,order.getId());
-                mDatas = DbHelper.getInstance().readDbList(db,Order.class);
-                ((ListViewAdapter)mListView.getAdapter()).setDatas(mDatas);
+                if (order.getmCbTradeNo() == null) {
+                    DbHelper.getInstance().deleteObj(db, Order.class, order.getId());
+                    ToastUtils.show(mContext, "删除" + order.getId() + "成功");
+                    mDatas = DbHelper.getInstance().readDbList(db, Order.class);
+                    ((ListViewAdapter) mListView.getAdapter()).setDatas(mDatas);
+                }
                 return true;
             }
         });

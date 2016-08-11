@@ -36,6 +36,7 @@ public class StringUtil {
     public static final String PAY_TYPE_ZHIFUBAO_CODE = "支付宝二维码支付";
     public static final String TRADE_STATUS_SUCCESS = "交易成功";
     public static final String TRADE_STATUS_FAIL = "交易失败";
+    public static final String TRADE_STATUS_CANCLE = "交易撤销";
 
 
 
