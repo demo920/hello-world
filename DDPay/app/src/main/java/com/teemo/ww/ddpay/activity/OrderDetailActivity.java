@@ -23,6 +23,7 @@ import com.iboxpay.cashbox.minisdk.model.TradingNo;
 import com.teemo.ww.ddpay.R;
 import com.teemo.ww.ddpay.app.PayApplication;
 import com.teemo.ww.ddpay.db.DbHelper;
+import com.teemo.ww.ddpay.manager.IBoxPayManager;
 import com.teemo.ww.ddpay.utils.CryptUtil;
 import com.teemo.ww.ddpay.bean.Order;
 import com.teemo.ww.ddpay.utils.StringUtil;
@@ -82,38 +83,46 @@ public class OrderDetailActivity extends Activity {
         mCheckSaleSlipBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showTradeDetail();
+//                showTradeDetail();
+                IBoxPayManager manager = new IBoxPayManager(mContext);
+                manager.showTradeDetail(order, DemoActivity.mMD5Key);
             }
         });
         mPrintSaleSlipBtn = (Button) findViewById(R.id.btn_print_sale_slip);
         mPrintSaleSlipBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    //打印签购单
-                    String transactionId = System.currentTimeMillis() + "";
-                    ParcelableMap additionalMap = new ParcelableMap();
-                    additionalMap.put(ParcelableMap.TRANSACTION_ID, transactionId);
-
-
-                    final String sign = CryptUtil.getDefaultSign(Config.config, null, order.getmOutTradeNo(),
-                            order.getmCbTradeNo(), DemoActivity.mMD5Key,
-                            additionalMap.getMap());
-                    //****设置打印出来的订单号*****
-                    additionalMap.put(ParcelableMap.PRINT_ORDER_NO, "打印自定义第三方流水号");
-                    //设置不跳转签购单直接打印的字段
-                    additionalMap.put("isPrint", "print");
-
-                    CashboxProxy.getInstance(mContext)
-                            .showTradeDetail(transactionId, order.getmOutTradeNo(),
-                                    order.getmCbTradeNo(),
-                                    SignType.TYPE_MD5, sign, additionalMap);
-
-                } catch (ConfigErrorException e) {
-                    e.printStackTrace();
-                }
+//                printTradeInfo();
+                IBoxPayManager manager = new IBoxPayManager(mContext);
+                manager.printTradeInfo(order,DemoActivity.mMD5Key);
             }
         });
+    }
+
+    private void printTradeInfo() {
+        try {
+            //打印签购单
+            String transactionId = System.currentTimeMillis() + "";
+            ParcelableMap additionalMap = new ParcelableMap();
+            additionalMap.put(ParcelableMap.TRANSACTION_ID, transactionId);
+
+
+            final String sign = CryptUtil.getDefaultSign(Config.config, null, order.getmOutTradeNo(),
+                    order.getmCbTradeNo(), DemoActivity.mMD5Key,
+                    additionalMap.getMap());
+            //****设置打印出来的订单号*****
+            additionalMap.put(ParcelableMap.PRINT_ORDER_NO, "打印自定义第三方流水号");
+            //设置不跳转签购单直接打印的字段
+            additionalMap.put("isPrint", "print");
+
+            CashboxProxy.getInstance(mContext)
+                    .showTradeDetail(transactionId, order.getmOutTradeNo(),
+                            order.getmCbTradeNo(),
+                            SignType.TYPE_MD5, sign, additionalMap);
+
+        } catch (ConfigErrorException e) {
+            e.printStackTrace();
+        }
     }
 
     private void showTradeDetail() {
@@ -140,7 +149,47 @@ public class OrderDetailActivity extends Activity {
         @Override
         public void onClick(View v) {
             //撤销该订单
-            repealOrder();
+//            repealOrder();
+            //加个转圈提示
+            final ProgressDialog dialog = new ProgressDialog(mContext);
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.show();
+
+            IBoxPayManager manager = new IBoxPayManager(mContext);
+            manager.repealOrder(order,DemoActivity.mMD5Key, new ITradeCallback() {
+                @Override
+                public void onTradeSuccess(ParcelableMap map) {
+                    dialog.dismiss();
+                    Log.d(TAG, "撤销成功");
+                    for (String key : map.getMap().keySet()) {
+                        Log.d(TAG, key + ":" + map.get(key));
+                    }
+                    final String mCbTradeNo = map.get(ParcelableMap.CB_TRADE_NO);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mTradeStatusTv.setText("已撤销");
+                            titleBar.setRightBtn("", null);
+                            DbHelper.getInstance().updataDb(db,Order.class,"cbTradeNo",mCbTradeNo,"tradeStatus","已撤销");
+                        }
+                    });
+                }
+
+                @Override
+                public void onTradeSuccessWithSign(ParcelableMap map,
+                                                   ParcelableBitmap signBitmap) {
+                    dialog.dismiss();
+                }
+
+                @Override
+                public void onTradeFail(ErrorMsg msg) {
+                    dialog.dismiss();
+                    final String errorStr =
+                            "撤销失败 - " + msg.getErrorCode() + "," + msg.getErrorMsg();
+                    Log.d(TAG, errorStr);
+                }
+            });
         }
     };
 

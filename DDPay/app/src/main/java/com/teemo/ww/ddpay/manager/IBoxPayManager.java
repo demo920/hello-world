@@ -1,6 +1,9 @@
 package com.teemo.ww.ddpay.manager;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.iboxpay.cashbox.minisdk.CashboxProxy;
 import com.iboxpay.cashbox.minisdk.PayType;
@@ -8,14 +11,20 @@ import com.iboxpay.cashbox.minisdk.SignType;
 import com.iboxpay.cashbox.minisdk.callback.ITradeCallback;
 import com.iboxpay.cashbox.minisdk.exception.ConfigErrorException;
 import com.iboxpay.cashbox.minisdk.model.Config;
+import com.iboxpay.cashbox.minisdk.model.ErrorMsg;
+import com.iboxpay.cashbox.minisdk.model.ParcelableBitmap;
 import com.iboxpay.cashbox.minisdk.model.ParcelableMap;
+import com.iboxpay.cashbox.minisdk.model.TradingNo;
 import com.teemo.ww.ddpay.activity.DemoActivity;
 import com.teemo.ww.ddpay.bean.Order;
+import com.teemo.ww.ddpay.db.DbHelper;
 import com.teemo.ww.ddpay.utils.CryptUtil;
 import com.teemo.ww.ddpay.utils.LogUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static android.R.attr.order;
 
 /**
  * 盒子支付管理工具类
@@ -178,9 +187,10 @@ public class IBoxPayManager {
     /**
      * 查看签购单
      *
-     * @param order 订单信息
+     * @param order 订单
+     * @param mMD5Key 秘钥
      */
-    public void showTradeDetail(Order order) {
+    public void showTradeDetail(Order order, String mMD5Key) {
         try {
             //查看签购单
             String transactionId = System.currentTimeMillis() + "";
@@ -188,7 +198,7 @@ public class IBoxPayManager {
             additionalMap.put(ParcelableMap.TRANSACTION_ID, transactionId);
 
             final String sign = CryptUtil.getDefaultSign(Config.config, null, order.getmOutTradeNo(),
-                    order.getmCbTradeNo(), DemoActivity.mMD5Key,
+                    order.getmCbTradeNo(), mMD5Key,
                     additionalMap.getMap());
             CashboxProxy.getInstance(mContext)
                     .showTradeDetail(transactionId, order.getmOutTradeNo(),
@@ -198,6 +208,71 @@ public class IBoxPayManager {
         } catch (ConfigErrorException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 打印签购单
+     * @param order 订单
+     * @param mMD5Key 秘钥
+     */
+    public void printTradeInfo(Order order, String mMD5Key) {
+        try {
+            //打印签购单
+            String transactionId = System.currentTimeMillis() + "";
+            ParcelableMap additionalMap = new ParcelableMap();
+            additionalMap.put(ParcelableMap.TRANSACTION_ID, transactionId);
+
+
+            final String sign = CryptUtil.getDefaultSign(Config.config, null, order.getmOutTradeNo(),
+                    order.getmCbTradeNo(), mMD5Key,
+                    additionalMap.getMap());
+            //****设置打印出来的订单号*****
+            additionalMap.put(ParcelableMap.PRINT_ORDER_NO, "打印自定义第三方流水号");
+            //设置不跳转签购单直接打印的字段
+            additionalMap.put("isPrint", "print");
+
+            CashboxProxy.getInstance(mContext)
+                    .showTradeDetail(transactionId, order.getmOutTradeNo(),
+                            order.getmCbTradeNo(),
+                            SignType.TYPE_MD5, sign, additionalMap);
+
+        } catch (ConfigErrorException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 撤销交易
+     * @param order 订单
+     * @param mMD5Key 秘钥
+     * @param callback 回调接口
+     */
+    public void repealOrder(Order order, String mMD5Key, ITradeCallback callback) {
+
+        ParcelableMap additionalMap = new ParcelableMap();
+        String transactionId = System.currentTimeMillis() + "";
+        additionalMap.put(ParcelableMap.TRANSACTION_ID, transactionId);
+
+        String transAmount = getAmount(order.getmAmount());
+        //签名
+        String sign = CryptUtil.getDefaultSign(Config.config, transAmount, order.getmOutTradeNo(),
+                order.getmCbTradeNo(), mMD5Key, additionalMap.getMap());
+        try {
+            CashboxProxy.getInstance(mContext).cancelTrading(transAmount, transactionId, sign,
+                    SignType.TYPE_MD5, new TradingNo(order.getmOutTradeNo(), order.getmCbTradeNo()),
+                    additionalMap, callback);
+        } catch (ConfigErrorException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getAmount(String amount) {
+        if (!TextUtils.isEmpty(amount)) {
+            long amountDouble = (long) (Double.parseDouble(amount) * 100);
+            amount = String.valueOf(amountDouble);
+        }
+        LogUtils.e(TAG,amount+"");
+        return amount;
     }
 
 }
