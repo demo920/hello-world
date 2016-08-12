@@ -2,21 +2,21 @@ package com.teemo.ww.ddpay.app;
 
 import android.app.Application;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.iboxpay.cashbox.minisdk.CashboxProxy;
 import com.iboxpay.cashbox.minisdk.callback.IAuthCallback;
 import com.iboxpay.cashbox.minisdk.exception.ConfigErrorException;
 import com.iboxpay.cashbox.minisdk.model.Config;
 import com.iboxpay.cashbox.minisdk.model.ErrorMsg;
 import com.iboxpay.cashbox.minisdk.model.PrintPreference;
+import com.teemo.ww.ddpay.db.DbHelper;
+import com.teemo.ww.ddpay.manager.IBoxPayManager;
 import com.teemo.ww.ddpay.utils.LogUtils;
 import com.teemo.ww.ddpay.utils.ToastUtils;
-
-import org.xutils.DbManager;
-import org.xutils.x;
-
-import java.io.File;
+import com.uuch.adlibrary.utils.DisplayUtil;
 
 /**
  * Created by admin on 2016/8/8.
@@ -30,53 +30,27 @@ public class PayApplication extends Application {
     private String mMerchantNo = "001440196451453";
     public static String mMD5Key = "x24aq6QZT/c=";
 
-    /**数据库配置*/
-    private DbManager.DaoConfig daoConfig;
-    public DbManager.DaoConfig getDaoConfig() {
-        return daoConfig;
-    }
-
-    /**数据库操作对象*/
-    private DbManager db;
-    public DbManager getDb(){
-        db = x.getDb(daoConfig);
-        return db;
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
         //xUtils任务控制中心,需要在application的onCreate中初始化
-        x.Ext.init(this);
-        initDb();
-        initBox();
+        DbHelper.getInstance().init(this);
+        IBoxPayManager.getInstance(this).initAppInfo();
+//        initAppInfo();
+
+        initDisplayOpinion();
+
+        Fresco.initialize(this);
     }
 
-    /**初始化xUtil数据库配置信息*/
-    private void initDb() {
-        daoConfig = new DbManager.DaoConfig()
-                .setDbName("diandian.db")
-                // 不设置dbDir时, 默认存储在app的私有目录.
-                .setDbDir(new File("/sdcard"))
-                .setDbVersion(2)
-                .setDbOpenListener(new DbManager.DbOpenListener() {
-                    @Override
-                    public void onDbOpened(DbManager db) {
-                        // 开启WAL, 对写入加速提升巨大
-                        db.getDatabase().enableWriteAheadLogging();
-                    }
-                })
-                .setDbUpgradeListener(new DbManager.DbUpgradeListener() {
-                    @Override
-                    public void onUpgrade(DbManager db, int oldVersion, int newVersion) {
-                        // TODO: ...
-                        // db.addColumn(...);
-                        // db.dropTable(...);
-                        // ...
-                        // or
-                        // db.dropDb();
-                    }
-                });
+    private void initDisplayOpinion() {
+        DisplayMetrics dm = getResources().getDisplayMetrics();
+        DisplayUtil.density = dm.density;
+        DisplayUtil.densityDPI = dm.densityDpi;
+        DisplayUtil.screenWidthPx = dm.widthPixels;
+        DisplayUtil.screenhightPx = dm.heightPixels;
+        DisplayUtil.screenWidthDip = DisplayUtil.px2dip(getApplicationContext(), dm.widthPixels);
+        DisplayUtil.screenHightDip = DisplayUtil.px2dip(getApplicationContext(), dm.heightPixels);
     }
 
     /**初始化盒子支付配置信息*/

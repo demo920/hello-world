@@ -7,34 +7,27 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
 import com.iboxpay.cashbox.minisdk.CashboxProxy;
-import com.iboxpay.cashbox.minisdk.callback.GetCashboxProxyCallback;
-import com.iboxpay.cashbox.minisdk.callback.IAuthCallback;
 import com.iboxpay.cashbox.minisdk.callback.IFetchCardInfoCallback;
-import com.iboxpay.cashbox.minisdk.exception.ConfigErrorException;
-import com.iboxpay.cashbox.minisdk.model.Config;
 import com.iboxpay.cashbox.minisdk.model.ErrorMsg;
 import com.iboxpay.cashbox.minisdk.model.M1CardPWType;
 import com.iboxpay.cashbox.minisdk.model.PrintPreference;
 import com.teemo.ww.ddpay.R;
-import com.teemo.ww.ddpay.app.PayApplication;
-import com.teemo.ww.ddpay.bean.Order;
-import com.teemo.ww.ddpay.db.DbHelper;
-import com.teemo.ww.ddpay.utils.LogUtils;
+import com.uuch.adlibrary.AdConstant;
+import com.uuch.adlibrary.AdManager;
+import com.uuch.adlibrary.bean.AdInfo;
+import com.uuch.adlibrary.transformer.ZoomOutPageTransformer;
 
-import org.xutils.DbManager;
-import org.xutils.common.util.KeyValue;
-import org.xutils.db.sqlite.WhereBuilder;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
-public class DemoActivity extends Activity implements View.OnClickListener {
+public class DemoActivity extends AppCompatActivity implements View.OnClickListener {
     private final static String TAG = "打印机 客户端";
 
     private Button mGetSnBtn, mGetPlainTextCardNo,mGetM1CardNo;
@@ -42,9 +35,9 @@ public class DemoActivity extends Activity implements View.OnClickListener {
     private Context mContext;
 
     private Button mPayBtn, mMyOrderBtn;
-    ////TODO 请找盒子申请配置信息
-    private String mAppCode = "2001740";
-    private String mMerchantNo = "001440196451453";
+//    ////TODO 请找盒子申请配置信息
+//    private String mAppCode = "2001740";
+//    private String mMerchantNo = "001440196451453";
     public static String mMD5Key = "x24aq6QZT/c=";
 
     private PrintPreference printPreference;
@@ -56,53 +49,6 @@ public class DemoActivity extends Activity implements View.OnClickListener {
         mContext = this;
         setContentView(R.layout.activity_demo);
         initView();
-//        initData();
-    }
-
-    private void initData() {
-        //初始化配置
-        printPreference = new PrintPreference();
-        //是否显示“盒子支付签购单”页面
-        //printPreference.setDisplayIBoxPaySaleSlip(PrintPreference.SALESLIP_HIDE);
-        //设置签购单商户名称
-        printPreference.setMerchantName("merchantName");
-        //设置签购单操作员
-        printPreference.setOperatorNo("001");
-        //设置签购单Title
-        printPreference.setOrderTitle("订单title");
-        Log.e(TAG, "initData--mMerchantNo=" + mMerchantNo);
-        Config.config = new Config(mAppCode, printPreference);
-        Config.config.setIboxMchtNo(mMerchantNo);
-
-        try {
-            CashboxProxy.getInstance(this).initAppInfo(Config.config, new IAuthCallback() {
-                @Override
-                public void onAuthSuccess() {
-                    Log.d(TAG, "authSuccess");
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),
-                                "签到成功", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
-
-                @Override
-                public void onAuthFail(final ErrorMsg msg) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),
-                                "签到失败:" + msg.getErrorCode() + " ," + msg.getErrorMsg(),
-                                Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
-            });
-        } catch (ConfigErrorException e) {
-            e.printStackTrace();
-        }
     }
 
     private void initView() {
@@ -173,12 +119,53 @@ public class DemoActivity extends Activity implements View.OnClickListener {
             //获取M1卡 卡号
             case R.id.btn_getM1CardNo:
 
-                PayApplication app =  (PayApplication) getApplication();
-                DbManager db = app.getDb();
-                DbHelper.getInstance().updataDb(db,Order.class,"amount","552.0","tradeStatus","交易撤销了");
+//                PayApplication app =  (PayApplication) getApplication();
+//                DbManager db = app.getDb();
+//                DbHelper.getInstance().updataDb(db,Order.class,"amount","552.0","tradeStatus","交易撤销了");
+
+                showAd();
 //                fetchM1CardInfo();
                 break;
         }
+    }
+
+    private void showAd() {
+        List<AdInfo> advList = initAd();
+        AdManager adManager = new AdManager((Activity) mContext, advList);
+        adManager
+        /**
+         * 设置弹窗背景全屏显示还是在内容区域显示
+         */
+        .setOverScreen(false)
+        /**
+         * 设置ViewPager的滑动动画
+         */
+        .setPageTransformer(new ZoomOutPageTransformer())
+        /**
+         * 设置弹窗距离屏幕两侧的距离（单位dp）
+         */
+        .setPadding(10);
+
+        /**
+         * 执行弹窗的显示操作
+         */
+        adManager.showAdDialog(AdConstant.ANIM_LEFT_TO_RIGHT);
+    }
+
+    private List<AdInfo> initAd() {
+        List<AdInfo> advList = new ArrayList<>();
+        AdInfo adInfo = new AdInfo();
+        adInfo.setActivityImg("https://raw.githubusercontent.com/yipianfengye/android-adDialog/master/images/testImage1.png");
+        advList.add(adInfo);
+
+        adInfo = new AdInfo();
+        adInfo.setActivityImg("https://raw.githubusercontent.com/yipianfengye/android-adDialog/master/images/testImage2.png");
+        advList.add(adInfo);
+
+        adInfo = new AdInfo();
+        adInfo.setActivityImg("http://image.tianjimedia.com/uploadImages/2014/345/35/228TSWE5QQU9.jpg");
+        advList.add(adInfo);
+        return advList;
     }
 
     private void fetchCardInfo() {

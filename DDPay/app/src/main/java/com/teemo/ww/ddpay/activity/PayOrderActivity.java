@@ -23,15 +23,12 @@ import com.iboxpay.cashbox.minisdk.model.ErrorMsg;
 import com.iboxpay.cashbox.minisdk.model.ParcelableBitmap;
 import com.iboxpay.cashbox.minisdk.model.ParcelableMap;
 import com.teemo.ww.ddpay.R;
-import com.teemo.ww.ddpay.app.PayApplication;
 import com.teemo.ww.ddpay.bean.Order;
 import com.teemo.ww.ddpay.db.DbHelper;
 import com.teemo.ww.ddpay.manager.IBoxPayManager;
 import com.teemo.ww.ddpay.utils.CryptUtil;
 import com.teemo.ww.ddpay.utils.LogUtils;
 import com.teemo.ww.ddpay.utils.StringUtil;
-
-import org.xutils.DbManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -46,10 +43,6 @@ public class PayOrderActivity extends Activity implements View.OnClickListener {
 
     private Context mContext;
     private Order order;
-    private PayApplication app;
-    private DbManager db;
-    //订单存储
-//    private ObjToFile objToFile;
 
     /**
      * 第三方外部流水号
@@ -76,8 +69,6 @@ public class PayOrderActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        app = (PayApplication) getApplication(); // 获得CustomApplication对象
-        db = app.getDb();
         setContentView(R.layout.activity_pay_order);
 
         initView();
@@ -535,7 +526,7 @@ public class PayOrderActivity extends Activity implements View.OnClickListener {
 
         //写入数据库
         LogUtils.i("ORDER", order.toString());
-        DbHelper.getInstance().saveDb(db, order);
+        DbHelper.getInstance().saveDb(order);
 
         //*******写入文件结束******
     }
@@ -562,7 +553,7 @@ public class PayOrderActivity extends Activity implements View.OnClickListener {
 
         //写入数据库
         LogUtils.i("ORDER", order.toString());
-        DbHelper.getInstance().saveDb(db, order);
+        DbHelper.getInstance().saveDb(order);
         //********写入文件结束************
 
         Intent intent = new Intent(PayOrderActivity.this, DemoActivity.class);

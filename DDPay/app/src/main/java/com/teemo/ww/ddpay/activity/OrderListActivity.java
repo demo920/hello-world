@@ -3,28 +3,19 @@ package com.teemo.ww.ddpay.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.teemo.ww.ddpay.R;
 import com.teemo.ww.ddpay.adapter.ListViewAdapter;
-import com.teemo.ww.ddpay.app.PayApplication;
 import com.teemo.ww.ddpay.bean.Order;
 import com.teemo.ww.ddpay.db.DbHelper;
-import com.teemo.ww.ddpay.utils.StringUtil;
 import com.teemo.ww.ddpay.utils.ObjToFile;
+import com.teemo.ww.ddpay.utils.StringUtil;
 import com.teemo.ww.ddpay.utils.ToastUtils;
-
-import org.xutils.DbManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,15 +28,11 @@ public class OrderListActivity extends Activity {
     private ListView mListView;
     private ObjToFile objToFile;
     private List<Order> mDatas;
-    private PayApplication app;
-    private DbManager db;
     private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        app = (PayApplication) getApplication();
-        db = app.getDb();
         mContext = this;
         setContentView(R.layout.activity_order_list);
 
@@ -58,7 +45,7 @@ public class OrderListActivity extends Activity {
 
         objToFile = new ObjToFile(this);
 //        mDatas = objToFile.getObjList();
-        mDatas = DbHelper.getInstance().readDbList(db,Order.class);
+        mDatas = DbHelper.getInstance().readDbList(Order.class);
         Log.d("数据大小---" + mDatas.size(), "");
         //对日期进行升序排列
         Collections.sort(mDatas, new Comparator<Order>() {
@@ -89,9 +76,9 @@ public class OrderListActivity extends Activity {
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Order order = (Order) adapterView.getAdapter().getItem(position);
                 if (order.getmCbTradeNo() == null) {
-                    DbHelper.getInstance().deleteObj(db, Order.class, order.getId());
+                    DbHelper.getInstance().deleteObj(Order.class, order.getId());
                     ToastUtils.show(mContext, "删除" + order.getId() + "成功");
-                    mDatas = DbHelper.getInstance().readDbList(db, Order.class);
+                    mDatas = DbHelper.getInstance().readDbList(Order.class);
                     ((ListViewAdapter) mListView.getAdapter()).setDatas(mDatas);
                 }
                 return true;

@@ -21,15 +21,12 @@ import com.iboxpay.cashbox.minisdk.model.ParcelableBitmap;
 import com.iboxpay.cashbox.minisdk.model.ParcelableMap;
 import com.iboxpay.cashbox.minisdk.model.TradingNo;
 import com.teemo.ww.ddpay.R;
-import com.teemo.ww.ddpay.app.PayApplication;
+import com.teemo.ww.ddpay.bean.Order;
 import com.teemo.ww.ddpay.db.DbHelper;
 import com.teemo.ww.ddpay.manager.IBoxPayManager;
 import com.teemo.ww.ddpay.utils.CryptUtil;
-import com.teemo.ww.ddpay.bean.Order;
 import com.teemo.ww.ddpay.utils.StringUtil;
 import com.teemo.ww.ddpay.view.TitleBar;
-
-import org.xutils.DbManager;
 
 public class OrderDetailActivity extends Activity {
     private static final String TAG = OrderDetailActivity.class.getSimpleName();
@@ -39,13 +36,10 @@ public class OrderDetailActivity extends Activity {
     private Context mContext;
     private Order order;
     private TitleBar titleBar;
-    private DbManager db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        PayApplication app =  (PayApplication) getApplication();
-        db = app.getDb();
         setContentView(R.layout.activity_order_detail);
 
         initView();
@@ -171,7 +165,7 @@ public class OrderDetailActivity extends Activity {
                         public void run() {
                             mTradeStatusTv.setText("已撤销");
                             titleBar.setRightBtn("", null);
-                            DbHelper.getInstance().updataDb(db,Order.class,"cbTradeNo",mCbTradeNo,"tradeStatus","已撤销");
+                            DbHelper.getInstance().updataDb(Order.class,"cbTradeNo",mCbTradeNo,"tradeStatus","已撤销");
                         }
                     });
                 }
@@ -225,7 +219,7 @@ public class OrderDetailActivity extends Activity {
                                 public void run() {
                                     mTradeStatusTv.setText("已撤销");
                                     titleBar.setRightBtn("", null);
-                                    DbHelper.getInstance().updataDb(db,Order.class,"cbTradeNo",mCbTradeNo,"tradeStatus","已撤销");
+                                    DbHelper.getInstance().updataDb(Order.class,"cbTradeNo",mCbTradeNo,"tradeStatus","已撤销");
                                 }
                             });
                         }

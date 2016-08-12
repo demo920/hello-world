@@ -1,34 +1,33 @@
 package com.teemo.ww.ddpay.manager;
 
-import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.iboxpay.cashbox.minisdk.CashboxProxy;
 import com.iboxpay.cashbox.minisdk.PayType;
 import com.iboxpay.cashbox.minisdk.SignType;
+import com.iboxpay.cashbox.minisdk.callback.IAuthCallback;
 import com.iboxpay.cashbox.minisdk.callback.ITradeCallback;
 import com.iboxpay.cashbox.minisdk.exception.ConfigErrorException;
 import com.iboxpay.cashbox.minisdk.model.Config;
 import com.iboxpay.cashbox.minisdk.model.ErrorMsg;
-import com.iboxpay.cashbox.minisdk.model.ParcelableBitmap;
 import com.iboxpay.cashbox.minisdk.model.ParcelableMap;
+import com.iboxpay.cashbox.minisdk.model.PrintPreference;
 import com.iboxpay.cashbox.minisdk.model.TradingNo;
-import com.teemo.ww.ddpay.activity.DemoActivity;
 import com.teemo.ww.ddpay.bean.Order;
-import com.teemo.ww.ddpay.db.DbHelper;
 import com.teemo.ww.ddpay.utils.CryptUtil;
 import com.teemo.ww.ddpay.utils.LogUtils;
+import com.teemo.ww.ddpay.utils.ToastUtils;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static android.R.attr.order;
-
 /**
  * 盒子支付管理工具类
- * 包括四种支付，以及查看签购单，打印签购单
+ * 包括四种支付，以及查看签购单，打印签购单，撤销交易
  * Created by admin on 2016/8/11.
  */
 
@@ -38,6 +37,11 @@ public class IBoxPayManager {
 
     private Context mContext;
 
+    ////TODO 请找盒子申请配置信息
+    private String mAppCode = "2001740";
+    private String mMerchantNo = "001440196451453";
+    public static String mMD5Key = "x24aq6QZT/c=";
+
     /**
      * 公司后台地址，用于接收盒子后台返回信息
      */
@@ -45,6 +49,66 @@ public class IBoxPayManager {
 
     public IBoxPayManager(Context mContext) {
         this.mContext = mContext;
+    }
+
+    private static IBoxPayManager mInstance;
+    /**
+     * 获取实例
+     * @return 返回当前类实例
+     */
+    public static IBoxPayManager getInstance(Context context) {
+        if (mInstance == null) {
+            synchronized (IBoxPayManager.class) {
+                if (mInstance == null) {
+                    mInstance = new IBoxPayManager(context);
+                }
+            }
+        }
+        return mInstance;
+    }
+
+    /**初始化盒子支付配置信息*/
+    public void initAppInfo() {
+        //初始化配置
+        PrintPreference printPreference = new PrintPreference();
+        //是否显示“盒子支付签购单”页面，若隐藏则刷卡支付成功不打印，返回一张图片
+        //printPreference.setDisplayIBoxPaySaleSlip(PrintPreference.SALESLIP_HIDE);
+        //设置签购单商户名称
+        printPreference.setMerchantName("merchantName");
+        //设置签购单操作员
+        printPreference.setOperatorNo("001");
+        //设置签购单Title
+        printPreference.setOrderTitle("订单title");
+        Log.e(TAG, "initData--mMerchantNo=" + mMerchantNo);
+        Config.config = new Config(mAppCode, printPreference);
+        Config.config.setIboxMchtNo(mMerchantNo);
+
+        try {
+            CashboxProxy.getInstance(mContext).initAppInfo(Config.config, new IAuthCallback() {
+                @Override
+                public void onAuthSuccess() {
+                    LogUtils.d(TAG, "authSuccess");
+                    new Handler(mContext.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtils.show(mContext,"签到成功");
+                        }
+                    });
+                }
+
+                @Override
+                public void onAuthFail(final ErrorMsg msg) {
+                    new Handler(mContext.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtils.show(mContext,"签到失败");
+                        }
+                    });
+                }
+            });
+        } catch (ConfigErrorException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -168,11 +232,6 @@ public class IBoxPayManager {
         }
     }
 
-    public String toYuanAmount(String amount) {
-        double amountDouble = Double.parseDouble(amount) / 100;
-        return String.valueOf(amountDouble);
-    }
-
     /**
      * 获取订单时间
      *
@@ -180,14 +239,14 @@ public class IBoxPayManager {
      */
     private static String getOrderTime() {
         //获取当前订单时间
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
         return df.format(new Date());
     }
 
     /**
      * 查看签购单
      *
-     * @param order 订单
+     * @param order 订单  必须需传入mOutTradeNo，mCbTradeNo可无
      * @param mMD5Key 秘钥
      */
     public void showTradeDetail(Order order, String mMD5Key) {
@@ -227,7 +286,7 @@ public class IBoxPayManager {
                     order.getmCbTradeNo(), mMD5Key,
                     additionalMap.getMap());
             //****设置打印出来的订单号*****
-            additionalMap.put(ParcelableMap.PRINT_ORDER_NO, "打印自定义第三方流水号");
+            additionalMap.put(ParcelableMap.PRINT_ORDER_NO, order.getmOutTradeNo());
             //设置不跳转签购单直接打印的字段
             additionalMap.put("isPrint", "print");
 
@@ -243,7 +302,7 @@ public class IBoxPayManager {
 
     /**
      * 撤销交易
-     * @param order 订单
+     * @param order 订单 必须传入mOutTradeNo，mCbTradeNo。
      * @param mMD5Key 秘钥
      * @param callback 回调接口
      */
@@ -253,7 +312,7 @@ public class IBoxPayManager {
         String transactionId = System.currentTimeMillis() + "";
         additionalMap.put(ParcelableMap.TRANSACTION_ID, transactionId);
 
-        String transAmount = getAmount(order.getmAmount());
+        String transAmount = toYuanAmount(order.getmAmount());
         //签名
         String sign = CryptUtil.getDefaultSign(Config.config, transAmount, order.getmOutTradeNo(),
                 order.getmCbTradeNo(), mMD5Key, additionalMap.getMap());
@@ -266,14 +325,12 @@ public class IBoxPayManager {
         }
     }
 
-    private String getAmount(String amount) {
+    private String toYuanAmount(String amount) {
         if (!TextUtils.isEmpty(amount)) {
             long amountDouble = (long) (Double.parseDouble(amount) * 100);
             amount = String.valueOf(amountDouble);
+            LogUtils.e(TAG,amount+"");
         }
-        LogUtils.e(TAG,amount+"");
         return amount;
     }
-
 }
-
