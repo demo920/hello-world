@@ -1,0 +1,33 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
+    defaultConfig {
+        applicationId "com.teemo.ww.ddpay"
+        minSdkVersion 15
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile files('libs/print.jar')
+    compile files('libs/cashbox_minisdk.jar')
+    compile 'com.android.support:recyclerview-v7:24.1.1'
+    compile 'com.google.code.gson:gson:2.4'
+    compile 'org.xutils:xutils:3.3.36'
+    compile 'cn.yipianfengye.android:ad-library:1.0'
+    androidTestCompile 'junit:junit:4.12'
+    testCompile 'org.testng:testng:6.9.6'
+    testCompile 'junit:junit:4.12'
+}

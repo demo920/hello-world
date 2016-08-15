@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.BookOrderActivity">
+
+  <com.teemo.ww.ddpay.view.TitleBar
+      android:id="@+id/titlebar"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:title="下单"/>
+
+  <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+
+
+    <ImageView
+        android:id="@+id/iv_goods_image"
+        android:layout_width="@dimen/one_hundred_and_forty"
+        android:layout_height="@dimen/one_hundred_and_forty"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/margin_one_hundred"
+        android:src="@drawable/goods"/>
+
+    <TextView
+        android:id="@+id/tv_goods_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/iv_goods_image"
+        android:layout_centerHorizontal="true"
+        android:text="焦糖玛奇朵"
+        android:textSize="@dimen/text_size_fifteen"
+        android:textColor="@color/text_dark_common"
+        android:layout_marginTop="@dimen/margin_sixteen"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_below="@id/tv_goods_name"
+        android:orientation="horizontal">
+
+      <TextView
+          android:layout_width="wrap_content" android:layout_height="wrap_content"
+          android:text="¥"
+          android:textSize="@dimen/textsize_twenty"
+          android:textColor="@color/text_dark_common"/>
+
+      <EditText
+          android:id="@+id/et_money_count"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:minWidth="80dp"
+          android:text="32.00"
+          android:textSize="@dimen/textsize_twenty"
+          android:inputType="numberDecimal"
+          android:textColor="@color/text_dark_common"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_pay"
+        style="@style/common_btn_style"
+        android:layout_margin="14dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/btn_bg_orange_selector"
+        android:text="下单"
+        />
+  </RelativeLayout>
+
+</FrameLayout>

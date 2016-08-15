@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.DemoActivity">
+
+  <com.teemo.ww.ddpay.view.TitleBar
+      android:id="@+id/titlebar"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:title="DEMO"
+      app:showLeftArrow="true"/>
+
+  <Button
+      android:id="@+id/btn_pay"
+      style="@style/common_btn_style"
+      android:background="@drawable/btn_bg_orange_selector"
+      android:layout_marginTop="48dp"
+      android:layout_marginLeft="48dp"
+      android:layout_marginRight="48dp"
+      android:text="下单"/>
+
+  <Button
+      android:id="@+id/btn_my_order"
+      style="@style/common_btn_style"
+      android:background="@drawable/btn_bg_green_selector"
+      android:layout_marginLeft="48dp"
+      android:layout_marginRight="48dp"
+      android:layout_marginTop="20dp"
+      android:text="我的订单"/>
+
+  <Button
+      android:id="@+id/btn_getSn"
+      style="@style/common_btn_style"
+      android:background="@drawable/btn_bg_green_selector"
+      android:layout_marginLeft="48dp"
+      android:layout_marginRight="48dp"
+      android:layout_marginTop="20dp"
+      android:text="获取盒子sn号"
+      />
+
+    <Button
+        android:id="@+id/btn_getPlainTextCardNo"
+        style="@style/common_btn_style"
+        android:background="@drawable/btn_bg_green_selector"
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="48dp"
+        android:text="获取明文卡号"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        />
+
+  <Button
+      android:id="@+id/btn_getM1CardNo"
+      style="@style/common_btn_style"
+      android:background="@drawable/btn_bg_orange_selector"
+      android:layout_marginLeft="48dp"
+      android:layout_marginRight="48dp"
+      android:text="获取明文M1卡号"
+      android:layout_gravity="center"
+      android:layout_marginTop="20dp"
+  />
+
+</LinearLayout>

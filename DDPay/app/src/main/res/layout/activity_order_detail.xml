@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/divider_color"
+    tools:context=".activity.OrderDetailActivity">
+
+    <com.teemo.ww.ddpay.view.TitleBar
+        android:id="@+id/titlebar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="订单详情"/>
+
+    <LinearLayout
+        android:id="@+id/ll_trade_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/titlebar"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/tv_trade_status"
+            android:layout_width="wrap_content"
+            android:layout_height="52dp"
+            android:gravity="center"
+            android:text="交易成功"
+            android:drawableLeft="@drawable/success"
+            android:drawablePadding="8dp"
+            />
+
+        <include layout="@layout/line_item"/>
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/tv_order_detail"
+        android:layout_marginTop="16dp"
+        android:layout_below="@id/ll_trade_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:text="订单详情"
+        android:textSize="13dp"
+        android:textColor="@color/medium_gray"/>
+
+    <RelativeLayout
+        android:id="@+id/ll_order_detail"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:background="@color/white"
+        android:layout_marginTop="6dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_below="@id/tv_order_detail">
+
+        <TextView
+            android:id="@+id/tv_goods_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="焦糖玛奇朵X1"
+            android:layout_centerVertical="true"
+            />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/tv_goods_name"
+            android:gravity="right"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="¥"/>
+            <TextView
+                android:id="@+id/tv_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="32.00"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <include
+        android:id="@+id/line_item"
+        layout="@layout/line_item"
+        android:layout_below="@id/ll_order_detail"
+        android:layout_height="1dp"
+        android:layout_width="match_parent"/>
+
+
+    <TextView
+        android:id="@+id/tv_order_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:text="订单信息"
+        android:layout_below="@id/line_item"
+        android:layout_marginTop="16dp"
+        />
+
+    <LinearLayout
+        android:id="@+id/ll_order_info"
+        android:layout_below="@id/tv_order_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="16dp"
+        android:layout_marginTop="6dp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                style="@style/order_info_left_textview_style"
+                android:text="订单号码"/>
+
+            <TextView
+                android:id="@+id/tv_order_number"
+                style="@style/order_info_right_textview_style"
+                android:text="201314520"
+                android:layout_alignParentRight="true"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp">
+            <TextView
+                style="@style/order_info_left_textview_style"
+                android:text="订单时间"/>
+
+            <TextView
+                android:id="@+id/tv_data_time"
+                style="@style/order_info_right_textview_style"
+                android:text="2016-02-02 15:06"
+                android:layout_alignParentRight="true"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp">
+            <TextView
+                style="@style/order_info_left_textview_style"
+                android:text="支付方式"/>
+
+            <TextView
+                android:id="@+id/tv_pay_type"
+                style="@style/order_info_right_textview_style"
+                android:text="刷卡支付"
+                android:layout_alignParentRight="true"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <include layout="@layout/line_item"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/ll_order_info"/>
+
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/btn_check_sale_slip"
+            style="@style/common_btn_style"
+            android:layout_margin="14dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/btn_bg_orange_selector"
+            android:text="查看签购单"
+            />
+        <Button
+            android:id="@+id/btn_print_sale_slip"
+            style="@style/common_btn_style"
+            android:layout_margin="14dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/btn_bg_orange_selector"
+            android:text="打印签购单"
+            />
+    </LinearLayout>
+
+
+</RelativeLayout>

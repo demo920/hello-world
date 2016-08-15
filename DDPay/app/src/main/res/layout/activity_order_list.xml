@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/divider_color"
+    tools:context=".activity.OrderListActivity">
+
+  <com.teemo.ww.ddpay.view.TitleBar
+      android:id="@+id/titlebar"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:title="订单"/>
+
+  <ListView
+      android:id="@+id/listView"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/titlebar"
+      android:dividerHeight="12dp"
+      android:divider="@color/divider_color"/>
+
+
+</RelativeLayout>
