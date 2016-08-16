@@ -250,6 +250,9 @@ public class IBoxPayManager {
      * @param mMD5Key 秘钥
      */
     public void showTradeDetail(Order order, String mMD5Key) {
+        if (order.getmCbTradeNo() == null){
+            LogUtils.e(TAG,"参数mCbTradeNo不能为空");
+        }
         try {
             //查看签购单
             String transactionId = System.currentTimeMillis() + "";

@@ -3,11 +3,11 @@ package com.teemo.ww.ddpay.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.RemoteException;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,7 +19,6 @@ import com.iboxpay.cashbox.minisdk.model.ErrorMsg;
 import com.iboxpay.cashbox.minisdk.model.M1CardPWType;
 import com.iboxpay.cashbox.minisdk.model.PrintPreference;
 import com.teemo.ww.ddpay.R;
-import com.uuch.adlibrary.AdConstant;
 import com.uuch.adlibrary.AdManager;
 import com.uuch.adlibrary.bean.AdInfo;
 import com.uuch.adlibrary.transformer.ZoomOutPageTransformer;
@@ -27,7 +26,7 @@ import com.uuch.adlibrary.transformer.ZoomOutPageTransformer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DemoActivity extends AppCompatActivity implements View.OnClickListener {
+public class DemoActivity extends Activity implements View.OnClickListener {
     private final static String TAG = "打印机 客户端";
 
     private Button mGetSnBtn, mGetPlainTextCardNo,mGetM1CardNo;
@@ -144,12 +143,14 @@ public class DemoActivity extends AppCompatActivity implements View.OnClickListe
         /**
          * 设置弹窗距离屏幕两侧的距离（单位dp）
          */
-        .setPadding(10);
+        .setPadding(10)
+        .setSpeed(5)
+        .setBackViewColor(Color.RED);
 
         /**
          * 执行弹窗的显示操作
          */
-        adManager.showAdDialog(AdConstant.ANIM_LEFT_TO_RIGHT);
+        adManager.showAdDialog(180);
     }
 
     private List<AdInfo> initAd() {

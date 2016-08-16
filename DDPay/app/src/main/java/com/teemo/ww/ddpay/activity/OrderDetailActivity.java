@@ -26,6 +26,7 @@ import com.teemo.ww.ddpay.db.DbHelper;
 import com.teemo.ww.ddpay.manager.IBoxPayManager;
 import com.teemo.ww.ddpay.utils.CryptUtil;
 import com.teemo.ww.ddpay.utils.StringUtil;
+import com.teemo.ww.ddpay.utils.ToastUtils;
 import com.teemo.ww.ddpay.view.TitleBar;
 
 public class OrderDetailActivity extends Activity {
@@ -78,6 +79,10 @@ public class OrderDetailActivity extends Activity {
             @Override
             public void onClick(View v) {
 //                showTradeDetail();
+                if (order.getmCbTradeNo() == null){
+                    ToastUtils.show(mContext,"未完成订单不支持查询");
+                    return;
+                }
                 IBoxPayManager manager = new IBoxPayManager(mContext);
                 manager.showTradeDetail(order, DemoActivity.mMD5Key);
             }

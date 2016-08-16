@@ -45,8 +45,8 @@ public class PayOrderActivity extends Activity implements View.OnClickListener {
     private Order order;
 
     /**
-     * 第三方外部流水号
-     */
+    * 第三方外部流水号
+    */
     private String mTradeNo;
 
     /**
@@ -187,6 +187,7 @@ public class PayOrderActivity extends Activity implements View.OnClickListener {
                 @Override
                 public void onTradeFail(ErrorMsg errorMsg) {
                     LogUtils.d(TAG,"工具类，刷卡交易失败");
+                    tradeFail(errorMsg);
 
                 }
             });
@@ -217,6 +218,7 @@ public class PayOrderActivity extends Activity implements View.OnClickListener {
                 @Override
                 public void onTradeFail(ErrorMsg errorMsg) {
                     LogUtils.d(TAG,"工具类，微信扫码支付失败");
+                    tradeFail(errorMsg);
 
                 }
             });
@@ -248,6 +250,7 @@ public class PayOrderActivity extends Activity implements View.OnClickListener {
                 @Override
                 public void onTradeFail(ErrorMsg errorMsg) {
                     LogUtils.d(TAG,"工具类，微信二维码支付失败");
+                    tradeFail(errorMsg);
 
                 }
             });
@@ -278,6 +281,7 @@ public class PayOrderActivity extends Activity implements View.OnClickListener {
                 @Override
                 public void onTradeFail(ErrorMsg errorMsg) {
                     LogUtils.d(TAG,"工具类，支付宝失败");
+                    tradeFail(errorMsg);
 
                 }
             });
@@ -518,11 +522,9 @@ public class PayOrderActivity extends Activity implements View.OnClickListener {
 
     private void tradeFail(ErrorMsg msg) {
         //*******写入文件******
-        order.setmTradeStatus(msg.getErrorMsg());
+//        order.setmTradeStatus(msg.getErrorMsg());
         order.setmTradeStatus(StringUtil.TRADE_STATUS_FAIL);
         order.setmCbTradeNo(mCbTradeNo);
-        order.setmOutTradeNo(mTradeNo);
-//        objToFile.writeObject(order);
 
         //写入数据库
         LogUtils.i("ORDER", order.toString());
