@@ -25,6 +25,9 @@ interface HttpInterface {
     @GET(Constant.latest_news)
     Call<LatestNews> latestNews();
 
+    @GET(Constant.NEWS + Constant.BEFORE + "{date}")
+    Call<LatestNews> beforeNews(@Path("date") String date);
+
     @GET(Constant.NEWS + "{new_id}")
     Call<News> news(@Path("new_id") int new_id);
 }

@@ -66,4 +66,13 @@ public class HttpUtils {
     }
 
 
+    /**
+     * 5.过往消息
+     */
+    public static void beforeNews(String date ,Callback callback) {
+        call = create.beforeNews(date);
+        call.enqueue(callback);
+    }
+
+
 }

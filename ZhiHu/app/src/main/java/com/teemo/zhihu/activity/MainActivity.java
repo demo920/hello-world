@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity
 
         initView();
 
-        requestNetData();
+        requestLastestNews();
     }
 
     private void initView() {
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity
         mRecyclerView.setAdapter(getAdapter());
     }
 
-    private void requestNetData() {
+    private void requestLastestNews() {
         HttpUtils.latestNews(new Callback<LatestNews>() {
             @Override
             public void onResponse(Call<LatestNews> call, Response<LatestNews> response) {
@@ -96,6 +96,24 @@ public class MainActivity extends AppCompatActivity
                 mRecyclerView.getAdapter().notifyDataSetChanged();
                 mViewPager.setAdapter(new TopStoryPagerAdapter(mContext, mTopDatas));
                 initIndicator();
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void requestBeforeNews(String mDate) {
+        HttpUtils.beforeNews(mDate, new Callback<LatestNews>() {
+            @Override
+            public void onResponse(Call<LatestNews> call, Response<LatestNews> response) {
+                mDatas.addAll(response.body().getStories());
+                MainActivity.this.mDate = response.body().getDate();
+                LogUtils.i(TAG, "----onResponse:" + response.body().toString() + "\n--mDatas.size():" + mDatas.size());
+
+                mRecyclerView.getAdapter().notifyDataSetChanged();
             }
 
             @Override
@@ -170,10 +188,13 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(mContext, NewsActivity.class);
-                        intent.putExtra(Constant.NEWS_ID,storiesBean.getId());
+                        intent.putExtra(Constant.NEWS_ID, storiesBean.getId());
                         startActivity(intent);
                     }
                 });
+                if (position != 0 && position >= mDatas.size()) {
+                    requestBeforeNews(mDate);
+                }
             }
         };
 

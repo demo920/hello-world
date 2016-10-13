@@ -46,7 +46,8 @@ public class NewsActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<News> call, Response<News> response) {
                 LogUtils.e(TAG, "--OK--" + response.body().toString());
-                getCSS(response);
+                wv.loadData(response.body().getBody(), "text/html; charset=UTF-8", null);//这种写法可以正确解码
+//                getCSS(response);
             }
 
             @Override
@@ -61,14 +62,7 @@ public class NewsActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
 
-                LogUtils.e(TAG, "--onResponse--"+response.message());
-                return;
-//                try {
-//                    wv.loadUrl(response.body().string());
-//                    wv.loadData(response1.body().getBody(), "text/html; charset=UTF-8", null);//这种写法可以正确解码
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
+                LogUtils.e(TAG, "--onResponse--" + response.message());
             }
 
             @Override
