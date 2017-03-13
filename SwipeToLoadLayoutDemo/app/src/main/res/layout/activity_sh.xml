@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.scu.miomin.shswiperefresh.core.SHSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipeRefreshLayout"
+    app:guidance_text_color="@color/colorPrimary"
+    app:guidance_view_bg_color="#00000000"
+    app:load_text="加载更多"
+    app:progress_bar_color="@color/colorPrimary"
+    app:refresh_text="下拉刷新"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</com.scu.miomin.shswiperefresh.core.SHSwipeRefreshLayout>

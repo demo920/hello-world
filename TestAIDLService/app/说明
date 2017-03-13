@@ -1,0 +1,58 @@
+<1>服务端配置（不需要界面）
+①.创建aidl自定义接口文件 —IMyAidlInterface.aidl
+②编译（因为Android Studio不能像Eclipse那样自动编译aidl文件，所以需要手动编译）
+点击Build –> Make Module’server’
+然后可以看到在build/generated/source/debug/com.example.lambert.aidlproject/目录下生成了一个文件IMyAidlInterface，表示编译成功；
+③编写Service
+public class MyService extends Service {
+    @Override
+    public IBinder onBind(Intent intent) {
+
+        //记得要return一个IMyService,否则客户端调用的时候会报空指针
+        return new IMyService();
+    }
+
+
+    public class IMyService extends IMyAidlInterface.Stub {
+
+        @Override
+        public String getValue() throws RemoteException {
+            return "This is Lambert Server";
+        }
+    }
+
+}
+④在AndroidMenifest.xml中对Service进行配置：
+<service
+    android:name=".MyService"
+    android:process=":remote">
+    <intent-filter>
+        <action android:name="com.example.lambert.aidlproject.MyService" />
+    </intent-filter>
+</service>
+
+
+<2>客户端配置
+①需要将服务端配置的整个aidl目录一并拷贝到客户端所在工程src/main目录下（包名与文件名必须与服务端一模一样）
+②编译（同服务端）
+③绑定服务
+        //通过 mService = IMyAidlInterface.Stub.asInterface(service);　可以获取到服务端的代理对象，从而可以通过回调方法从服务端获取到我们所需的数据。
+private ServiceConnection connection = new ServiceConnection() {
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        mService = IMyAidlInterface.Stub.asInterface(service);
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        mService = null;
+    }
+};
+
+Intent intent = new Intent();
+intent.setAction("com.example.lambert.aidlproject.MyService");
+//从 Android 5.0开始 隐式Intent绑定服务的方式已不能使用,所以这里需要设置Service所在服务端的包名
+intent.setPackage("com.example.lambert.aidlproject");
+bindService(intent, connection, Context.BIND_AUTO_CREATE);
+
+http://blog.csdn.net/lambert_a/article/details/51567773
