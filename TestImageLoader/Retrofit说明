@@ -1,0 +1,7 @@
+一、 Retrofit2.0 中baseUrl和完整url构建的关系
+baseUrl是作为API的地址，我们也可能更改它的值。
+而在定义接口的时候我们需要为其中的方法添加@GET或@POST来标记其请求的方式，同时完整url的其他部分。
+假设 baseUrl = "http://api.douban.com/base/movie/"
+通过一些网络文档描述，如果我们在@GET/@POST中添加参数为"/list"以"/"开头则表示完整的url为"http://api.douban.com/list"，注意后面的/base/movie都没有了，
+而如果在@GET/@POST中添加参数为"list"没有以"/"开头则表示完整的url为“http://api.douban.com/base/movie/list。
+同时，如果在@GET/@POST中的参数本身就是一个完整的url，那么就会抛弃baseUrl而使用其参数上的url。
