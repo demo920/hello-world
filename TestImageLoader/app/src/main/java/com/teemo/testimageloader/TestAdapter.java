@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.teemo.testimageloader.image.ImageLoadUtils;
+import com.teemo.testimageloader.image.ImageLoaderFactory;
 
 import java.util.List;
 
@@ -57,7 +57,8 @@ class TestAdapter extends RecyclerView.Adapter {
                 mListener.onImageClicked(view, mData.get(position));
             }
         });
-        ImageLoadUtils.loadImage(imageView.getContext(), mData.get(position), imageView);
+
+        ImageLoaderFactory.getLoader().displayImage(imageView.getContext(), imageView, mData.get(position), null);
 
     }
 

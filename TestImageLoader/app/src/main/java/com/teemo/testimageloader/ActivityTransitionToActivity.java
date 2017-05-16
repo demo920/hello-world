@@ -9,7 +9,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
-import com.teemo.testimageloader.image.ImageLoadUtils;
+import com.teemo.testimageloader.image.ImageLoaderFactory;
 
 /**
  * Activity that gets transitioned to
@@ -32,11 +32,10 @@ public class ActivityTransitionToActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             String url = intent.getStringExtra("bitmap");
-            Log.i("TAG","ok---"+url);
-            ImageLoadUtils.loadImage(imageView.getContext(), url, imageView);
-        }else {
-
-            Log.e("TAG","no---");
+            Log.i("TAG", "ok---" + url);
+            ImageLoaderFactory.getLoader().displayImage(imageView.getContext(), imageView, url, null);
+        } else {
+            Log.e("TAG", "no---");
         }
     }
 
